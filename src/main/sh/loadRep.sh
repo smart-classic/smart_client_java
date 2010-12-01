@@ -27,5 +27,5 @@ java -cp \
 /home/nate/SMArt/openrdf-sesame-2.3.2/lib/aduna-commons-xml-2.6.0.jar:\
 /home/nate/SMArt/openrdf-sesame-2.3.2/lib/aduna-commons-collections-2.7.0.jar:\
 /home/nate/SMArt/openrdf-sesame-2.3.2/lib/sesame-rio-rdfxml-2.3.2.jar \
-   org.smartplatforms.client.Work
+   org.smartplatforms.client.GenerateFromSmartOwl
 
