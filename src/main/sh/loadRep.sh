@@ -1,6 +1,5 @@
 java -cp \
 ../../../target/SMArt_client-1.0-SNAPSHOT.jar:\
-/home/nate/NetBeansProjects/client/target/classes:\
 /home/nate/.m2/repository/openrdf/aduna-commons-iteration/2.3.2/aduna-commons-iteration-2.3.2.jar:\
 /home/nate/.m2/repository/openrdf/sesame-model/2.3.2/sesame-model-2.3.2.jar:\
 /home/nate/.m2/repository/openrdf/sesame-repository-api/2.3.2/sesame-repository-api-2.3.2.jar:\
@@ -27,5 +26,5 @@ java -cp \
 /home/nate/SMArt/openrdf-sesame-2.3.2/lib/aduna-commons-xml-2.6.0.jar:\
 /home/nate/SMArt/openrdf-sesame-2.3.2/lib/aduna-commons-collections-2.7.0.jar:\
 /home/nate/SMArt/openrdf-sesame-2.3.2/lib/sesame-rio-rdfxml-2.3.2.jar \
-   org.smartplatforms.client.GenerateFromSmartOwl
+   org.smartplatforms.client.codegen.GenerateFromSmartOwl
 
