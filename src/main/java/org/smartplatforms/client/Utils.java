@@ -455,6 +455,11 @@ public class Utils {
         signWithSignpost(hcRequest, consumerKey0, consumerSecret0, phaToken, phaTokenSecret);
 
         hcRequest.addHeader("Accept", "text/plain,application/xml");      // don't be mistaken for a browser
+        HttpResponse httpResponse = smartExecute(hcRequest, options);
+        return httpResponse;
+    }
+
+    public HttpResponse smartExecute(HttpUriRequest hcRequest, Map<String,Object> options) throws SMArtClientException {
 
         AbstractHttpClient httpClient = new DefaultHttpClient();
         HttpParams httpParams0 = httpClient.getParams();

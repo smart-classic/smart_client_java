@@ -1,14 +1,21 @@
 package org.smartplatforms.client;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.params.HttpParams;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.StatusLine;
+import org.apache.http.HttpEntity;
 
 import org.openrdf.repository.RepositoryConnection;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
@@ -40,6 +47,8 @@ class SMArtClient {
         smartUtils = new Utils(consumerKey, consumerSecret, baseURL,
                 new DefaultResponseTypeConversion(), httpTimeout);
     }
+
+    //http://sandbox.smartplatforms.org/oauth/authorize?oauth_token=OYJrYRzxAjRmYXgSyfko&oauth_callback=oob
 
     /**
     for example.
@@ -511,8 +520,10 @@ class SMArtClient {
         return null /* RepositoryConnection instance will be here */;
     }
 
-    /** get request token */
-    public String getRequestToken() throws SMArtClientException {
+    /** get request token
+     * @return [token, secret, redirectURL]
+    */
+    public String[] getRequestToken(String recordId) throws SMArtClientException {
         if (requestTokenURL == null) {
             throw new SMArtClientException("used constructor without requestTokenURL");
         }
@@ -526,55 +537,26 @@ class SMArtClient {
 
 
         String urlWithRequestToken = null;
+        String[] tokenSecret = null;
+
         try {
             String oldDebug = System.getProperty("debug");
             System.setProperty("debug", "true");
-//        addParams.put("offline", "true");
-//        addParams.put("record_id", "2000000008");
-//            List<String[]> additionalParams = new ArrayList<String[]>();
-//            additionalParams.add(new String[] { "offline", "true" } );
-//            additionalParams.add(new String[] { "record_id", "2000000008" } );
-//            oprov.setListener(new OAuthProviderListenerForSMArt(additionalParams));
 
-            
-//            urlWithRequestToken = oprov.retrieveRequestToken(oauthConsumer, oauthCallback);
+            List<String[]> additionalParams = new ArrayList<String[]>();
+            additionalParams.add(new String[] { "offline", "true" } );
+            additionalParams.add(new String[] { "record_id", recordId /*"2000000008"*/ } );
+            oprov.setListener(new OAuthProviderListenerForSMArt(additionalParams));
 
+            urlWithRequestToken = oprov.retrieveRequestTokenAdditionalParameters(
+                    oauthConsumer, oauthCallback, "offline", "true", "record_id", recordId);
 
 
-
-        // invalidate current credentials, if any
-        oauthConsumer.setTokenWithSecret(null, null);
-
-        // 1.0a expects the callback to be sent while getting the request token.
-        // 1.0 service providers would simply ignore this parameter.
-///        retrieveToken(oauthConsumer, requestTokenURL, "oauth_callback", "oob",   "offline", "true",   "record_id", "2000000008");
-
-        HttpParameters responseParameters = retrieveToken(
-                (DefaultHttpClient) httpClient, oprov, oauthConsumer, requestTokenURL,
-             "offline", "true",   "record_id", "2000000008" );
-
-        String callbackConfirmed = responseParameters.getFirst(oauth.signpost.OAuth.OAUTH_CALLBACK_CONFIRMED);
-        responseParameters.remove(oauth.signpost.OAuth.OAUTH_CALLBACK_CONFIRMED);
-        boolean isOAuth10a = true; //Boolean.TRUE.toString().equals(callbackConfirmed);
-
-        // 1.0 service providers expect the callback as part of the auth URL,
-        // Do not send when 1.0a.
-//        if (isOAuth10a) {
-//            return oauth.signpost.OAuth.addQueryParameters(
-//                    authorizationWebsiteUrl, OAuth.OAUTH_TOKEN,
-//                consumer.getToken());
-
-
-
-
-
-
-
-
-//            httpParameters_size = 0;
-//            if (oauthConsumer.getRequestParameters() != null) { httpParameters_size = oauthConsumer.getRequestParameters().size(); }
-//            System.out.println("CCC getRequestParameters.size():" + httpParameters_size);
             System.out.println("consumer token/secret: " + oauthConsumer.getToken() + "/" + oauthConsumer.getTokenSecret());
+            tokenSecret = new String[] {
+                oauthConsumer.getToken() , oauthConsumer.getTokenSecret(), urlWithRequestToken
+            };
+
             if (oldDebug == null) { System.clearProperty("debug"); }
             else { System.setProperty("debug", oldDebug); }
         } catch (oauth.signpost.exception.OAuthMessageSignerException mse) {
@@ -587,133 +569,70 @@ class SMArtClient {
             throw new SMArtClientException(comE);
         }
 System.out.println("requestToken: " + urlWithRequestToken);
-        return urlWithRequestToken;
+        return tokenSecret; //urlWithRequestToken;
     }
 
-
-    private HttpParameters/*void*/ retrieveToken(DefaultHttpClient httpClient, CommonsHttpOAuthProvider oprov, oauth.signpost.OAuthConsumer consumer, String endpointUrl,
-            String... additionalParameters) throws OAuthMessageSignerException,
-            OAuthCommunicationException, OAuthNotAuthorizedException,
-            OAuthExpectationFailedException, SMArtClientException {
-        Map<String, String> defaultHeaders = oprov.getRequestHeaders();
-        HttpParameters responseParams = null;
-        if (consumer.getConsumerKey() == null || consumer.getConsumerSecret() == null) {
-            throw new OAuthExpectationFailedException("Consumer key or secret not set");
+/*
+    public void authorizeRequestToken(String requestToken) throws SMArtClientException {
+        HttpGet hcRequest = new HttpGet(authorizeURL + "?oauth_token=" + requestToken + "&oauth_callback=oob");
+        hcRequest.addHeader("Accept", "text/html");      // pretend to be a browser
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        Map<String,Object> options = new HashMap<String,Object>();
+        org.apache.http.HttpResponse httpResponse = smartUtils.smartExecute(hcRequest, options);
+        StatusLine statusLine = httpResponse.getStatusLine();
+        int status = statusLine.getStatusCode();
+        if (status != 200) {
+            throw new SMArtClientException("authorizeRequestToken status not 200: " + status);
         }
-
-        HttpRequest request = null;
-        HttpResponse response = null;
+        HttpEntity responseEntity = httpResponse.getEntity();
+        System.out.println(responseEntity.getClass().getName());
+        System.out.println(statusLine.getReasonPhrase());
+        //org.apache.http.conn.BasicManagedEntity
+        System.out.println("response type: " + responseEntity.getContentType().getValue());
+        StringBuffer respBuff = new StringBuffer();
         try {
-        HttpPost tempPost = new HttpPost(endpointUrl);
-        request = new oauth.signpost.commonshttp.HttpRequestAdapter(tempPost);
-//           request = oprov.createRequest(endpointUrl);
-            for (String header : defaultHeaders.keySet()) {
-                request.setHeader(header, defaultHeaders.get(header));
+            InputStream eis = responseEntity.getContent();
+            int cc = eis.read();
+            while (cc != -1) {
+                respBuff.append((char) cc);
+                cc = eis.read();
             }
-            if (additionalParameters != null) {
-                HttpParameters httpParams = new HttpParameters();
-                httpParams.putAll(additionalParameters, true);
-                consumer.setAdditionalParameters(httpParams);
-
-
-
-        StringBuffer paramsAsString = new StringBuffer();
-        for (int ii = 0; ii < additionalParameters.length; ii += 2) {
-            System.out.println("adding: " + additionalParameters[ii] + ", " + additionalParameters[ii +1]);
-            if (paramsAsString.length() > 0) {
-                paramsAsString.append('&');
-            }
-            paramsAsString.append(additionalParameters[ii] + '=' + additionalParameters[ii +1]);  // do encoding !!!!  FIXME
-            //httpParams.setParameter(kv[0], kv[1]);  // not sure why this is needed also, but it is
-        }
-                    System.out.println("paramsAsString: " + paramsAsString);
-
-        ByteArrayEntity bae = new ByteArrayEntity(paramsAsString.toString().getBytes());
-        bae.setContentType("application/x-www-form-urlencoded");//application/x-www-form-urlencoded
-        HttpPost httpPost = (HttpPost) request.unwrap();
-        httpPost.setEntity(bae);
-        httpPost.setHeader("Content-type", "application/x-www-form-urlencoded");
-
-
-
-            }
-
-//            if (this.listener != null) {
-//                this.listener.prepareRequest(request);
-//            }
-
-            consumer.sign(request);
-
-//            if (this.listener != null) {
-//                this.listener.prepareSubmission(request);
-//            }
-
-
-            org.apache.http.HttpResponse response0 = httpClient.execute((org.apache.http.client.methods.HttpUriRequest) request.unwrap());
-            response = new oauth.signpost.commonshttp.HttpResponseAdapter(response0);
-                       //oauth/signpost/commonshttp/HttpResponseAdapter
-        //            response = sendRequest(request);
-
-        int statusCode = response.getStatusCode();
-
-            boolean requestHandled = false;
-//            if (this.listener != null) {
-//                requestHandled = this.listener.onResponseReceived(request, response);
-//            }
-//            if (requestHandled) {
-//                return;
-//            }
-
-            if (statusCode >= 300) {
-                throw new SMArtClientException(">= 300: " + statusCode);//handleUnexpectedResponse(statusCode, response);
-            }
-
-            /*HttpParameters*/ responseParams = oauth.signpost.OAuth.decodeForm(response.getContent());
-
-            String token = responseParams.getFirst(oauth.signpost.OAuth.OAUTH_TOKEN);
-            String secret = responseParams.getFirst(oauth.signpost.OAuth.OAUTH_TOKEN_SECRET);
-            responseParams.remove(oauth.signpost.OAuth.OAUTH_TOKEN);
-            responseParams.remove(oauth.signpost.OAuth.OAUTH_TOKEN_SECRET);
-
-           // setResponseParameters(responseParams);
-
-            if (token == null || secret == null) {
-                throw new OAuthExpectationFailedException(
-                        "Request token or token secret not set in server reply. "
-                                + "The service provider you use is probably buggy.");
-            }
-
-            consumer.setTokenWithSecret(token, secret);
-
-        //} catch (OAuthNotAuthorizedException e) {
-        //    throw e;
-        } catch (OAuthExpectationFailedException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new OAuthCommunicationException(e);
-        } finally {
-            try {
-             ////   closeConnection(request, response);
-            } catch (Exception e) {
-                throw new OAuthCommunicationException(e);
-            }
+        } catch (IOException ioe) {
+            throw new SMArtClientException(ioe);
         }
 
-        return responseParams;
+        System.out.println("response from authorize: " + respBuff);
     }
+*/
 
+//        GET&http%3A%2F%2Fsandbox-api.smartplatforms.org%2Foauth%2Faccess_token
+//        &oauth_consumer_key%3Ddeveloper-sandbox%2540apps.smartplatforms.org
+//        %26oauth_nonce%3DfeXztpJc2LS2vE1TDbcu
+//        %26oauth_signature_method%3DHMAC-SHA1
+//        %26oauth_timestamp%3D1291749261
+//        %26oauth_token%3DZ8eOu4OUTkhZfceB6wK3
+//        %26oauth_verifier%3Dh8yJBzgb3c2PQBdhJpAl
+//        %26oauth_version%3D1.0
 
-
-
-    public String[] getAccessToken(String requestToken) throws SMArtClientException {
+    public String[] getAccessToken(String requestToken, String requestTokenSecret, String verifier) throws SMArtClientException {
         AbstractHttpClient httpClient = new DefaultHttpClient();
         CommonsHttpOAuthProvider oprov = new CommonsHttpOAuthProvider(
                 requestTokenURL, accessTokenURL, authorizeURL, httpClient);
         CommonsHttpOAuthConsumer oauthConsumer =
                 new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+        System.out.println("in getAccessToken: " + accessTokenURL + " -- " +
+                consumerKey + ", " + consumerSecret + ", " +
+                requestToken + ", " + requestTokenSecret + ", " + verifier);
+        oauthConsumer.setTokenWithSecret(requestToken, requestTokenSecret);
         try {
-            // this should mutage oauthConsuer, adding the authorized token/secret
-            oprov.retrieveAccessToken(oauthConsumer, "verifier");
+            // this should mutate oauthConsuer, adding the authorized token/secret
+            String oldDebug = System.getProperty("debug");
+            System.setProperty("debug", "true");
+
+            oprov.retrieveAccessToken(oauthConsumer, verifier);
+
+            if (oldDebug == null) { System.clearProperty("debug"); }
+            else { System.setProperty("debug", oldDebug); }
         } catch (oauth.signpost.exception.OAuthMessageSignerException mse) {
             throw new SMArtClientException(mse);
         } catch (oauth.signpost.exception.OAuthNotAuthorizedException nae) {
@@ -757,10 +676,6 @@ System.out.println("requestToken: " + urlWithRequestToken);
             throw new org.smartplatforms.client.SMArtClientException(uee);
         }
     }
-
-
-
-
 }
 
 class OAuthProviderListenerForSMArt implements OAuthProviderListener {

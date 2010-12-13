@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>TODO supply a title</title>
+        <script type="text/javascript">
+function onToServlet() {
+    window.location = 'http://localhost:8000/SMArtClientJavaOAuthTester/SMArtClientJavaOAuthTester/index.html' + window.location.search;
+}
+
+/*
+function get_a_qs(which_param) {
+var query = window.location.search.substring(1);
+var parms = query.split('&');
+for (var i=0; i<parms.length; i++) {
+   var pos = parms[i].indexOf('=');
+   if (pos > 0) {
+      var key = parms[i].substring(0,pos);
+      var val = parms[i].substring(pos+1);
+      if (key == which_param) {
+          alert("returning param value: " + val);
+          return val;
+      }
+   }
+}
+}
+*/
+        </script>
+    </head>
+    <body  onLoad="onToServlet();">
+        <p>
+            Should redirect
+        </p>
+    </body>
+</html>
