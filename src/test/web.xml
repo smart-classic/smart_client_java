@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : web.xml.xml
+    Created on : December 11, 2010, 5:00 PM
+    Author     : nate
+    Description:
+        Purpose of the document follows.
+-->
+
+<web-app  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns='http://java.sun.com/xml/ns/j2ee'
+   xsi:schemaLocation='http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd' version="" id="">
+    <description>Used to test SMArt_client_java oauth dance</description>
+    <display-name>SMArt_client_java OAuth dance tester</display-name>
+    <servlet>
+        <servlet-name>SMArtClientJavaOAuthTester</servlet-name>
+        <servlet-class>org.smartplatforms.client.TestServlet</servlet-class>
+        <init-param>
+            <param-name>consumerKey</param-name>
+            <param-value>developer-sandbox@apps.smartplatforms.org</param-value>
+        </init-param>
+        <init-param>
+            <param-name>consumerSecret</param-name>
+            <param-value>smartapp-secret</param-value>
+        </init-param>
+        <init-param>
+            <param-name>serverBaseURL</param-name>
+            <param-value>http://sandbox-api.smartplatforms.org</param-value>
+        </init-param>
+        <init-param>
+            <param-name>requestTokenURL</param-name>
+            <param-value>oauth/request_token</param-value>
+        </init-param>
+        <init-param>
+            <param-name>authorizeURL</param-name>
+            <param-value>http://sandbox.smartplatforms.org/oauth/authorize</param-value>
+        </init-param>
+        <init-param>
+            <param-name>accessTokenURL</param-name>
+            <param-value>oauth/access_token</param-value>
+        </init-param>
+        <init-param>
+            <param-name>oauthCallback</param-name>
+            <param-value>oob</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SMArtClientJavaOAuthTester</servlet-name>
+        <url-pattern>/SMArtClientJavaOAuthTester/*</url-pattern>
+    </servlet-mapping>
+</web-app>

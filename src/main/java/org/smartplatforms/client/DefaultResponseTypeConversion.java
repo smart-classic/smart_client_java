@@ -88,6 +88,7 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
                 RepositoryConnection con = myRepository.getConnection();
 
                 con.add(bais, null, RDFFormat.RDFXML);
+                retVal = con;
             } catch (org.openrdf.repository.RepositoryException rpe) {
                 logger.debug(istrmdata, rpe);
                 throw new SMArtClientException(rpe);

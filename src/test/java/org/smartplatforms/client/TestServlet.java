@@ -14,6 +14,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.BindingSet;
+import org.openrdf.repository.RepositoryConnection;
+
 /**
  *
  * @author nate
@@ -21,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 public class TestServlet extends HttpServlet {
     private static TestServlet instance = null;
     private Utils utils = null;
-    private Map<String,String> tokensSecrets = new HashMap<String,String>();
+    private Map<String,String[]> tokensSecrets = new HashMap<String,String[]>();
     private SMArtClient smartClient = null;
 
     @Override
@@ -81,11 +87,15 @@ public class TestServlet extends HttpServlet {
                 // after_auth.html?oauth_token=FmfW4tnzaaAZgY7I4Yle&oauth_verifier=UZZ3zBlbiIjZ9S4TQkyA
                 String requestToken = paramMap.get("oauth_token")[0];
                 String verifier = paramMap.get("oauth_verifier")[0];
-                String requestTokenSecret = tokensSecrets.get(requestToken);
-                oauthValues = doDance_step2(requestToken, requestTokenSecret, verifier);
+                String[] requestTokenSecret_recordId = tokensSecrets.get(requestToken);
+                oauthValues = doDance_step2(requestToken, requestTokenSecret_recordId[0], verifier);
+
+                String allergyreport = getAllergyReport(oauthValues[0], oauthValues[1], requestTokenSecret_recordId[1]);
+
                 ros.write("<html><head><title>testing SMArtClient oauth page-2</title></head><body>".getBytes());
                 ros.write(("<p>access_token: " + oauthValues[0] + "</p>").getBytes());
                 ros.write(("<p>access_token_secret: " + oauthValues[1] + "</p>").getBytes());
+                ros.write(("<p>" + allergyreport + "</p>").getBytes());
                 ros.write("</body></html>".getBytes());
             }
             else {
@@ -103,14 +113,63 @@ public class TestServlet extends HttpServlet {
         String[] tokenSecret = smartClient.getRequestToken(recordId);
         //http://sandbox.smartplatforms.org/oauth/authorize?oauth_token=OYJrYRzxAjRmYXgSyfko&oauth_callback=oob
         //will need the secret associated with this token later, after_auth
-        tokensSecrets.put(tokenSecret[0], tokenSecret[1]);
+        tokensSecrets.put(tokenSecret[0], new String[] { tokenSecret[1], recordId });
         return tokenSecret;
     }
 
     private String[] doDance_step2(String requestToken, String requestTokenSecret, String verifier)
             throws SMArtClientException {
-        String[] tokenSecret = smartClient.getAccessToken(requestToken, requestTokenSecret, verifier);
+        String[] tokenSecret = smartClient.getAccessToken_GET(requestToken, requestTokenSecret, verifier);
         return new String[2];
+    }
+
+    private String alrgyQ =
+"PREFIX api: <http://smartplatforms.org/api/> \n" +
+"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
+"PREFIX alrgy: <http://smartplatforms.org/allergy/> \n" +
+"PREFIX dc: <http://purl.org/dc/terms/> \n" +
+"SELECT  ?gtitle ?gcategory ?gsubstance ?severity ?reaction WHERE { " +
+                "?alrgy <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://smartplatforms.org/allergy>.\n" +
+                "?alrgy alrgy:severity ?severity.\n" +
+                "?alrgy alrgy:reaction ?reaction.\n" +
+                "?alrgy alrgy:allergen ?allergen.\n" +
+                "?allergen allergy:category ?gcategory.\n" +
+                "?allergen allergy:substance ?gsubstance.\n" +
+                "?allergen dc:title ?gtitle.\n" +
+          "}";
+
+    private String getAllergyReport(String token, String secret, String recordId) throws SMArtClientException {
+        StringBuffer retVal = new StringBuffer(
+                "<table><tr><th>allergy title</th><th>category</th><th>substance</th><th>severity</th><th>reaction</th></tr>\n");
+        RepositoryConnection repC = smartClient.records_X_allergies_GET(recordId);
+
+        try {
+            TupleQuery tq = repC.prepareTupleQuery(QueryLanguage.SPARQL, alrgyQ);
+            TupleQueryResult tqr = tq.evaluate();
+            while (tqr.hasNext()) {
+                BindingSet bns = tqr.next();
+                String title = bns.getValue("?gtitle").stringValue();
+                String category = bns.getValue("?gcategory").stringValue();
+                String substance = bns.getValue("?gsubstance").stringValue();
+                String severity = bns.getValue("?gseverity").stringValue();
+                String reaction = bns.getValue("?greaction").stringValue();
+
+                retVal.append("<tr><td>" + title +
+                        "</td><td>" + category +
+                        "</td><td>" + substance +
+                        "</td><td>" + severity +
+                        "</td><td>" + reaction + "</td></tr>\n");
+            }
+            retVal.append("</table>");
+        } catch (org.openrdf.repository.RepositoryException rex) {
+            throw new SMArtClientException(rex);
+        } catch (org.openrdf.query.MalformedQueryException mqx) {
+            throw new SMArtClientException(mqx);
+        } catch (org.openrdf.query.QueryEvaluationException qvx) {
+            throw new SMArtClientException(qvx);
+        }
+
+        return retVal.toString();
     }
 /*
 

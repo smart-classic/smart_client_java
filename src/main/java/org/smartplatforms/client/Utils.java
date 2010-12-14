@@ -193,6 +193,11 @@ public class Utils {
         HttpResponse response = phaRequestPart1(
             reqMeth, reletivePath, queryString, phaToken, phaTokenSecret, requestBody, requestContentType, options);
 
+        return smartRequestResponse(response, responseContentType, reqMeth + " " + reletivePath, options);
+    }
+
+    public Object smartRequestResponse(HttpResponse response, Object responseContentType, String request, Map<String,Object> options)
+            throws SMArtClientException {
 
         StatusLine statusLine = response.getStatusLine();
         HttpEntity httpEntity = response.getEntity();
@@ -220,7 +225,7 @@ public class Utils {
                     multHeaders += "\n" + ctHeaders[ii].getValue();
                 }
                 logger.warn("more than one Content-Type header in response to "
-                    + reqMeth + ".  Using first of:" + reletivePath + multHeaders );
+                    + request + ".  Using first of:" + multHeaders );
             }
 
             contentTypeReceived = ctHeaders[0].getValue();
