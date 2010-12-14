@@ -10,15 +10,16 @@ mkdir ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 
 cp ../../../target/classes/org/smartplatforms/client/DefaultResponseTypeConversion.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 cp ../../../target/classes/org/smartplatforms/client/IndivoHttpEntity.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
-cp ../../../target/classes/org/smartplatforms/client/OAuthProviderListenerForSMArt.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 cp ../../../target/classes/org/smartplatforms/client/ResponseTypeConversion.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 cp ../../../target/classes/org/smartplatforms/client/SMArtClient.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
+cp ../../../target/classes/org/smartplatforms/client/SMArtClient\$OAuthProviderListenerForSMArt.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 cp ../../../target/classes/org/smartplatforms/client/SMArtClientException.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 cp ../../../target/classes/org/smartplatforms/client/SMArtClientExceptionHttp404.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 cp ../../../target/classes/org/smartplatforms/client/Utils.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 cp ../../../target/classes/org/smartplatforms/client/Utils.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 cp ../../../target/test-classes/org/smartplatforms/client/TestServlet.class ../../../testWar/WAR/WEB-INF/classes/org/smartplatforms/client
 cp /home/nate/SMArt/openrdf-sesame-2.3.2/openrdf-sesame-2.3.2-onejar.jar  ../../../testWar/WAR/WEB-INF/lib
+cp /home/nate/SMArt/slf4j-1.6.1/slf4j-api-1.6.1.jar ../../../testWar/WAR/WEB-INF/lib
 
 
 cp ../web.xml ../../../testWar/WAR/WEB-INF
@@ -29,6 +30,7 @@ cp ../web.xml ../../../testWar/WAR/WEB-INF
 
 cp /home/nate/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar ../../../testWar/WAR/WEB-INF/lib
 cp /home/nate/.m2/repository/commons-codec/commons-codec/1.3/commons-codec-1.3.jar ../../../testWar/WAR/WEB-INF/lib
+cp /home/nate/.m2/repository/commons-lang/commons-lang/2.5/commons-lang-2.5.jar ../../../testWar/WAR/WEB-INF/lib
 #cp /home/nate/.m2/repository/oauth/signpost/signpost-core/1.2.1.1/signpost-core-1.2.1.1.jar ../../../testWar/WAR/WEB-INF/lib
 #cp /home/nate/.m2/repository/oauth/signpost/signpost-commonshttp4/1.2.1.1/signpost-commonshttp4-1.2.1.1.jar ../../../testWar/WAR/WEB-INF/lib
 cp /home/nate/java/oauth/signpost/1.2.1.1/mySignpost.jar ../../../testWar/WAR/WEB-INF/lib

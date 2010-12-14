@@ -810,7 +810,7 @@ System.out.println("requestToken: " + urlWithRequestToken);
 
     public String[] getAccessToken_GET(String requestToken, String requestTokenSecret, String verifier)
             throws SMArtClientException {
-        AbstractHttpClient httpClient = new DefaultHttpClient();
+        //AbstractHttpClient httpClient = new DefaultHttpClient();
         CommonsHttpOAuthConsumer oauthConsumer =
                 new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
         System.out.println("in getAccessToken_GET: " + accessTokenURL + " -- " +
@@ -820,7 +820,7 @@ System.out.println("requestToken: " + urlWithRequestToken);
         addParams.put("oauth_verifier", verifier, true);
         oauthConsumer.setAdditionalParameters(addParams);
         oauthConsumer.setTokenWithSecret(requestToken, requestTokenSecret);
-        String srr = null;
+        Map<String,String> srr = null;
         try {
             // this should mutate oauthConsuer, adding the authorized token/secret
             String oldDebug = System.getProperty("debug");
@@ -831,7 +831,8 @@ System.out.println("requestToken: " + urlWithRequestToken);
             Map<String,Object> options = new HashMap<String,Object>();
             org.apache.http.HttpResponse httpResponse =
                     smartUtils.smartExecute(hcRequest, options);
-            srr = (String) smartUtils.smartRequestResponse(httpResponse, null, "GET " + accessTokenURL, options);
+            srr = (Map<String,String>) smartUtils.smartRequestResponse(
+                    httpResponse, "application/x-www-form-urlencoded", "GET " + accessTokenURL, options);
 
             System.out.println("access token response: " + srr.getClass().getName()  + ": " + srr);
 
@@ -845,18 +846,13 @@ System.out.println("requestToken: " + urlWithRequestToken);
             throw new SMArtClientException(comE);
         }
         String[] retVal = new String[2];
-        String[] srrA = srr.split("&");
-        for (int ii = 0; ii < srrA.length; ii++) {
-            String[] srrAA = srrA[ii].split("=");
-            if (srrAA.length != 2) {
-                throw new SMArtClientException("unexpected response from getAccessToken: " + srr);
-            }
-            if (srrAA[0].equals("ouath_token")) {
-                retVal[0] = srrAA[1];
-            } else if (srrAA[0].equals("oauth_token_secret")) {
-                retVal[1] = srrAA[1];
-            }
-        }
+        retVal[0] = srr.get("oauth_token");
+        retVal[1] = srr.get("oauth_token_secret");
+// java.util.HashMap: {
+//        oauth_token=c8YX9dnDd1AgSQF1jmUn,
+//        user_id=b2e6565b-e886-4e1c-8d5a-f44f8876a654,
+//        oauth_token_secret=F7ogawp4IoblBzqC8sX4,
+//        record_id=1000000005}
 //        retVal[0] = oauthConsumer.getToken();
 //        retVal[1] = oauthConsumer.getTokenSecret();
         if (retVal[0] == null || retVal[1] == null) {

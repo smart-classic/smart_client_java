@@ -72,7 +72,8 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
         logger.debug("coercing: " + istrmdata);
 
          // workaround for Pivotal 2172901
-        if (contentType.startsWith("application/xml") || contentType.startsWith("text/xml")) {
+//        if (contentType.startsWith("application/xml") || contentType.startsWith("text/xml"))
+        if (contentType.startsWith("application/rdf+xml")) {
             try {
 //                String[] parsedProlog = Utils.getEncoding(istrmdata);
 //                String prologEncoding = "UTF-8";
@@ -81,13 +82,14 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
 //                }
 
                 ByteArrayInputStream bais = new ByteArrayInputStream(istrmdata.getBytes());
+System.out.println("about to RDFify: " + istrmdata);
 
                 Sail memstore = new MemoryStore();
                 Repository myRepository = new SailRepository(memstore);
                 myRepository.initialize();
                 RepositoryConnection con = myRepository.getConnection();
 
-                con.add(bais, null, RDFFormat.RDFXML);
+                con.add(bais, "", RDFFormat.RDFXML);
                 retVal = con;
             } catch (org.openrdf.repository.RepositoryException rpe) {
                 logger.debug(istrmdata, rpe);

@@ -68,6 +68,9 @@ public class Utils {
         defaultConsumerKey = consumerKey;
         defaultConsumerSecret = consumerSecret;
         defaultBaseURL = baseURL;
+        if (defaultBaseURL.charAt(defaultBaseURL.length() -1) != '/') {
+            defaultBaseURL += "/";
+        }
         defaultResponseTypeConversion = responseTypeConversion;
         if (httpTimeout != null) {
             defaultHttpTimeout = httpTimeout;

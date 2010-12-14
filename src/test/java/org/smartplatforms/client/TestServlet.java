@@ -120,7 +120,7 @@ public class TestServlet extends HttpServlet {
     private String[] doDance_step2(String requestToken, String requestTokenSecret, String verifier)
             throws SMArtClientException {
         String[] tokenSecret = smartClient.getAccessToken_GET(requestToken, requestTokenSecret, verifier);
-        return new String[2];
+        return tokenSecret;
     }
 
     private String alrgyQ =
@@ -133,15 +133,24 @@ public class TestServlet extends HttpServlet {
                 "?alrgy alrgy:severity ?severity.\n" +
                 "?alrgy alrgy:reaction ?reaction.\n" +
                 "?alrgy alrgy:allergen ?allergen.\n" +
-                "?allergen allergy:category ?gcategory.\n" +
-                "?allergen allergy:substance ?gsubstance.\n" +
+                "?allergen alrgy:category ?gcategory.\n" +
+                "?allergen alrgy:substance ?gsubstance.\n" +
                 "?allergen dc:title ?gtitle.\n" +
           "}";
 
     private String getAllergyReport(String token, String secret, String recordId) throws SMArtClientException {
         StringBuffer retVal = new StringBuffer(
                 "<table><tr><th>allergy title</th><th>category</th><th>substance</th><th>severity</th><th>reaction</th></tr>\n");
-        RepositoryConnection repC = smartClient.records_X_allergies_GET(recordId);
+
+        RepositoryConnection repC = null;
+        Object resultObj = smartClient.records_X_allergies_GET(recordId, token, secret, null);
+        if (resultObj instanceof RepositoryConnection) {
+            repC = (RepositoryConnection) resultObj;
+        } else {
+            System.out.println("result of records_X_allergies_GET: " +
+                    resultObj.getClass().getName() + "    " + resultObj);
+            System.out.println(((String[])resultObj)[0] + ",  " + ((String[])resultObj)[1]);
+        }
 
         try {
             TupleQuery tq = repC.prepareTupleQuery(QueryLanguage.SPARQL, alrgyQ);
