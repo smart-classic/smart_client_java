@@ -353,7 +353,7 @@ public class GenerateFromSmartOwl {
 
     private void dowork0(OutputStream fos) throws org.openrdf.OpenRDFException, IOException {
 //        TurtleWriter turtleWriter = new TurtleWriter(System.out);
-        SPARQLResultsXMLWriter sparqlWriter = new SPARQLResultsXMLWriter(System.out);
+//        SPARQLResultsXMLWriter sparqlWriter = new SPARQLResultsXMLWriter(System.out);
         //SPARQLResultsXMLWriter
 
         Sail memstore = new MemoryStore();
