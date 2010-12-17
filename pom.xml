@@ -6,19 +6,18 @@
   <packaging>jar</packaging>
   <name>SMArt_client</name>
   <url>http://maven.apache.org</url>
-  <!-- http://repo.aduna-software.org/maven2/releases/ -->
   <repositories>
-<!-- repository>
-<releases>
-<enabled>true</enabled>
-</releases>
-<snapshots>
-<enabled>false</enabled>
-</snapshots>
-<id>aduna-opensource.releases</id>
-<name>Aduna Open Source - Maven releases</name>
-<url>http://repo.aduna-software.org/maven2/releases</url>
-</repository -->
+    <repository>
+        <releases>
+                <enabled>true</enabled>
+        </releases>
+        <snapshots>
+                <enabled>false</enabled>
+        </snapshots>
+        <id>aduna-opensource.releases</id>
+        <name>Aduna Open Source - Maven releases</name>
+        <url>http://repo.aduna-software.org/maven2/releases</url>
+    </repository>
 </repositories>
   <build>
     <plugins>
