@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
