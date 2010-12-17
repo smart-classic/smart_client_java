@@ -31,9 +31,8 @@ cp ../web.xml ../../../testWar/WAR/WEB-INF
 cp /home/nate/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar ../../../testWar/WAR/WEB-INF/lib
 cp /home/nate/.m2/repository/commons-codec/commons-codec/1.3/commons-codec-1.3.jar ../../../testWar/WAR/WEB-INF/lib
 cp /home/nate/.m2/repository/commons-lang/commons-lang/2.5/commons-lang-2.5.jar ../../../testWar/WAR/WEB-INF/lib
-#cp /home/nate/.m2/repository/oauth/signpost/signpost-core/1.2.1.1/signpost-core-1.2.1.1.jar ../../../testWar/WAR/WEB-INF/lib
-#cp /home/nate/.m2/repository/oauth/signpost/signpost-commonshttp4/1.2.1.1/signpost-commonshttp4-1.2.1.1.jar ../../../testWar/WAR/WEB-INF/lib
-cp /home/nate/java/oauth/signpost/1.2.1.1/mySignpost.jar ../../../testWar/WAR/WEB-INF/lib
+cp /home/nate/.m2/repository/oauth/signpost/signpost-core/1.2.1.1/signpost-core-1.2.1.1.jar ../../../testWar/WAR/WEB-INF/lib
+cp /home/nate/.m2/repository/oauth/signpost/signpost-commonshttp4/1.2.1.1/signpost-commonshttp4-1.2.1.1.jar ../../../testWar/WAR/WEB-INF/lib
 cp /home/nate/.m2/repository/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1.jar ../../../testWar/WAR/WEB-INF/lib
 cp /home/nate/.m2/repositoryBK1/org/apache/httpcomponents/httpclient/4.0.1/httpclient-4.0.1.jar ../../../testWar/WAR/WEB-INF/lib
 jar -cf ../../../SMArtClientJavaOAuthTester.war -C ../../../testWar/WAR WEB-INF 

@@ -1,5 +1,6 @@
 package org.smartplatforms.client;
 
+
 import org.openrdf.repository.RepositoryConnection;
 
 import java.io.InputStream;
@@ -33,7 +34,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.OAuthProviderListener;
 
-class SMArtClient {
+public class SMArtClient {
 
     private String consumerKey = null;
     private String consumerSecret = null;
@@ -42,14 +43,17 @@ class SMArtClient {
     private String oauthCallback = null;
     private String authorizeURL = null;
     private Utils smartUtils = null;
+
+    private DefaultResponseTypeConversion defaultResponseTypeConversion = null;
     int httpTimeout = 30000;
 
     public SMArtClient(String consumerKey, String consumerSecret, String baseURL)
             throws SMArtClientException {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
+        defaultResponseTypeConversion = new DefaultResponseTypeConversion();
         smartUtils = new Utils(consumerKey, consumerSecret, baseURL,
-                new DefaultResponseTypeConversion(), httpTimeout);
+                defaultResponseTypeConversion, httpTimeout);
     }
 
     /**
@@ -69,8 +73,9 @@ class SMArtClient {
         this.authorizeURL = authorizeURL; // this param not actually used, because authorize address is in the response to requesTokenURL
         this.accessTokenURL = accessTokenURL;
         this.oauthCallback = oauthCallback;
+        defaultResponseTypeConversion = new DefaultResponseTypeConversion();
         smartUtils = new Utils(consumerKey, consumerSecret, baseURL,
-                new DefaultResponseTypeConversion(), httpTimeout);
+                defaultResponseTypeConversion, httpTimeout);
     }
     /** Get a single allergy -- records/{record_id}/allergies/{allergy_id}
     * @param recordId server's record ID
@@ -726,7 +731,7 @@ class SMArtClient {
 
     /** get request token
      * @return [token, secret, redirectURL]
-    */
+    */ /*
     public String[] getRequestToken(String recordId) throws SMArtClientException {
         if (requestTokenURL == null) {
             throw new SMArtClientException("used constructor without requestTokenURL");
@@ -747,7 +752,7 @@ class SMArtClient {
 
             List<String[]> additionalParams = new ArrayList<String[]>();
             additionalParams.add(new String[] { "offline", "true" } );
-            additionalParams.add(new String[] { "record_id", recordId /*"2000000008"*/ } );
+            additionalParams.add(new String[] { "record_id", recordId /+"2000000008"+/ } );
             oprov.setListener(new OAuthProviderListenerForSMArt(additionalParams));
             urlWithRequestToken = oprov.retrieveRequestTokenAdditionalParameters(
                     oauthConsumer, oauthCallback, "offline", "true", "record_id", recordId);
@@ -767,9 +772,63 @@ class SMArtClient {
         } catch (oauth.signpost.exception.OAuthCommunicationException comE) {
             throw new SMArtClientException(comE);
         }
+
 System.out.println("requestToken: " + urlWithRequestToken);
+// oauth_token_secret=9nf5ZMwEtZ2N6CNeBzb0&oauth_token=Z8eOu4OUTkhZfceB6wK3
+
         return tokenSecret; //urlWithRequestToken;
     }
+*/
+
+    /** get request token without using signpost OAuthProvider class,
+     * because OAuthProvider does not allow extra params
+     * @return [token, secret, redirectURL]
+    */
+    public String[] getRequestToken(String recordId) throws SMArtClientException {
+        if (requestTokenURL == null) {
+            throw new SMArtClientException("used constructor without requestTokenURL");
+        }
+        //AbstractHttpClient httpClient = new DefaultHttpClient();
+
+        CommonsHttpOAuthConsumer oauthConsumer =
+                new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+
+        HttpParameters addParams = new HttpParameters();
+        addParams.put("oauth_callback", oauthCallback);
+
+        // these are the extras OAuthProvider doesn't accomdate
+        addParams.put("offline", "true");
+        addParams.put("record_id", recordId /*"2000000008"*/);
+
+        // sign(..) method will add any oauth_*** here to Authorization header, via signing strategy
+        oauthConsumer.setAdditionalParameters(addParams);
+
+        // ones not added by sign(...) to Authorization header must be added to request body
+        ByteArrayEntity bae = new ByteArrayEntity(("offline=true&record_id=" + recordId).getBytes());
+        bae.setContentType("application/x-www-form-urlencoded");
+        HttpPost hcRequest = new HttpPost(requestTokenURL);
+        hcRequest.setEntity(bae);
+        try {
+            oauthConsumer.sign(hcRequest);
+        } catch (oauth.signpost.exception.OAuthMessageSignerException mse) {
+            throw new SMArtClientException(mse);
+        } catch (oauth.signpost.exception.OAuthExpectationFailedException efe) {
+            throw new SMArtClientException(efe);
+        } catch (oauth.signpost.exception.OAuthCommunicationException oce) {
+            throw new SMArtClientException(oce);
+        }
+
+        org.apache.http.HttpResponse httpResponse = smartUtils.smartExecute(hcRequest, new HashMap<String,Object>());
+        String retStr = (String) smartUtils.smartRequestResponse(
+                httpResponse, null, "POST " + requestTokenURL, new HashMap<String,Object>());
+
+        Map<String,String> retMap = defaultResponseTypeConversion.mapFromFormEncodedString(retStr);
+//        http://sandbox.smartplatforms.org/oauth/authorize?oauth_token=xAWNDyLjFGYrOUHMftAg&oauth_callback=oob
+//        oauth_token_secret=9nf5ZMwEtZ2N6CNeBzb0&oauth_token=Z8eOu4OUTkhZfceB6wK3
+        String[] retVal = new String[] { retMap.get("oauth_token"), retMap.get("oauth_token_secret") };
+        return retVal;
+    }
+
 
     public String[] getAccessToken(String requestToken, String requestTokenSecret, String verifier) throws SMArtClientException {
         AbstractHttpClient httpClient = new DefaultHttpClient();

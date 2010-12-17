@@ -3,9 +3,11 @@ package org.smartplatforms.client;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 import java.net.URL;
 
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
@@ -37,6 +40,7 @@ public class TestServlet extends HttpServlet {
     private Map<String,String[]> tokensSecrets = new HashMap<String,String[]>();
     private Map<String,String[]> recordsAccess = new HashMap<String,String[]>();
     private SMArtClient smartClient = null;
+    private String authorizeURL = null;
 
     private String[][] alrgyArr = {
         new String[] { "ACACIA CONCINNA FRUIT", "S9108H4YLE" },
@@ -66,9 +70,9 @@ public class TestServlet extends HttpServlet {
 
     private String allergyFormA = "<form action=\"http://localhost:8000/SMArtClientJavaOAuthTester"; // + getContextPath()
     private String allergyFormB = "\" method=\"post\">\n" +
-"<input type=\"hidden\" name=\"recordId\">";
+"<input type=\"hidden\" name=\"recordId\" value=\"";
     private String allergyFormC =
-"</input><strong>enter a new allergy for this patient</strong><br/>\n" +
+"\"></input><strong>enter a new allergy for this patient</strong><br/>\n" +
 "allergen: " +
 "<select name=\"allergy_substance\">\n";
     private String allergyFormD =
@@ -89,9 +93,9 @@ public class TestServlet extends HttpServlet {
 "<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"submit\"></submit>\n" +
 "</form>\n";
 
-
-
-
+    String allergyReportStyle =
+"\n<style>\nth { font-weight:bold; border-style:solid; border-width:2px; }" +
+"\ntd { border-style:solid; border-width:1px; }\n</style>\n";
 
 //<th>allergy title</th><th>category</th><th>substance</th><th>severity</th><th>reaction</th>
 
@@ -113,7 +117,7 @@ public class TestServlet extends HttpServlet {
                 serverBaseURL = serverBaseURL.substring(0, serverBaseURL.length() -1);
             }
             String requestTokenURL = getInitParameter("requestTokenURL");
-            String authorizeURL = getInitParameter("authorizeURL");
+            authorizeURL = getInitParameter("authorizeURL");
             String accessTokenURL = getInitParameter("accessTokenURL");
             String oauthCallback = getInitParameter("oauthCallback");
             utils = new Utils(consumerKey, consumerSecret,
@@ -174,16 +178,13 @@ public class TestServlet extends HttpServlet {
                 String allergy_category = paramMap.get("allergy_category")[0];
                 String allergy_severity = paramMap.get("allergy_severity")[0];
                 String allergy_reaction = paramMap.get("allergy_reaction")[0];
-                ros.write("<html><head><title>testing SMArtClient working on adding allergy</title></head><body>".getBytes());
-                ros.write(("<p>allergy: " + alrgyMap.get(allergy_substance) + "</p>").getBytes());
-                ros.write(("<p>allergy substance: " + allergy_substance + "</p>").getBytes());
-                ros.write(("<p>allergy category: " + allergy_category + "</p>").getBytes());
-                ros.write(("<p>allergy severity: " + allergy_severity + "</p>").getBytes());
-                ros.write(("<p>allergy reaction: " + allergy_reaction + "</p>").getBytes());
+//                ros.write("<html><head><title>testing SMArtClient working on adding allergy</title></head><body>".getBytes());
+//                ros.write(("<p>allergy: " + alrgyMap.get(allergy_substance) + "</p>").getBytes());
+//                ros.write(("<p>allergy substance: " + allergy_substance + "</p>").getBytes());
+//                ros.write(("<p>allergy category: " + allergy_category + "</p>").getBytes());
+//                ros.write(("<p>allergy severity: " + allergy_severity + "</p>").getBytes());
+//                ros.write(("<p>allergy reaction: " + allergy_reaction + "</p>").getBytes());
 
-                Sail memstore = new MemoryStore();
-                Repository myRepository = new SailRepository(memstore);
-                RepositoryConnection con = null;
 
                 String xmlToAdd = allergyExampleToSeverity + allergy_severity +
                         allergyExampleToReaction + allergy_reaction +
@@ -192,32 +193,44 @@ public class TestServlet extends HttpServlet {
                         allergyExampleToTitle + alrgyMap.get(allergy_substance) +
                         allergyExampleToEND;
 
-                String[] tokenSecret = recordsAccess.get(recordId);
 
+                String[] tokenSecret = recordsAccess.get(recordId);
+                System.out.println("tokenSecret: " + recordId + ", " + tokenSecret);
+                if (tokenSecret != null) {
+                    System.out.println("tokenSecret: " + tokenSecret[0] + ", " + tokenSecret[1]);
+                }
+                validateRDFXML(xmlToAdd);
+                String allergyreport = null;
+                ros.write("<html><head><title>testing SMArtClient just added allergy</title>".getBytes());
+                ros.write(allergyReportStyle.getBytes());
+                ros.write("</head><body>".getBytes());
                 try {
-                    Object response = smartClient.records_X_allergies_POST(recordId, tokenSecret[0], tokenSecret[1],
+//if (true) { throw new ServletException("System.exit(0);"); }
+                    RepositoryConnection response = (RepositoryConnection) smartClient.records_X_allergies_POST(
+                            recordId, tokenSecret[0], tokenSecret[1],
                             xmlToAdd, "application/rdf+xml", null);
 
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    RDFXMLPrettyWriter rxpw = new RDFXMLPrettyWriter(baos);
+                    response.export(rxpw);
+
                     System.out.println("allergies add response: " +
-                            response.getClass().getName() + "   " + response);
+                            response.getClass().getName() + "   " + response + "\n" +
+                            baos.toString());
+
+                    allergyreport = getAllergyReport(tokenSecret[0], tokenSecret[1], recordId);
                 } catch (SMArtClientException sce) {
                     throw new ServletException(sce);
+                } catch (org.openrdf.repository.RepositoryException repE) {
+                    throw new ServletException(repE);
+                } catch (org.openrdf.rio.RDFHandlerException rhe) {
+                    throw new ServletException(rhe);
                 }
-
-                /*
-                ByteArrayInputStream bais = new ByteArrayInputStream(xmlToAdd.getBytes());
-
-                //Object asdfaasf = (org.openrdf.model.Resource[])
-                try {
-                    con.add(bais,"", RDFFormat.RDFXML);
-                    myRepository.initialize();
-                    con = myRepository.getConnection();
-                } catch (org.openrdf.repository.RepositoryException rre) {
-                    throw new ServletException(rre);
-                } catch (org.openrdf.rio.RDFParseException rpe) {
-                    throw new ServletException(rpe);
-                }*/
-
+                ros.write(("<p>" + allergyreport + "</p>").getBytes());
+                ros.write(("<em>" + recordId + "</em>" +
+                        allergyFormA + req.getContextPath() + "/new_allergy" +
+                        allergyFormB + recordId +
+                        allergyFormC + alrgySelect + allergyFormD).getBytes());
                 ros.write("</body></html>".getBytes());
             }
             else {
@@ -229,6 +242,28 @@ public class TestServlet extends HttpServlet {
             throw new ServletException(ioe);
         }
     }
+
+    private void validateRDFXML(String xmlToAdd) throws ServletException {
+                ByteArrayInputStream bais = new ByteArrayInputStream(xmlToAdd.getBytes());
+                Sail memstore = new MemoryStore();
+                Repository myRepository = new SailRepository(memstore);
+                RepositoryConnection con = null;
+
+                //Object asdfaasf = (org.openrdf.model.Resource[])
+                try {
+                    myRepository.initialize();
+                    con = myRepository.getConnection();
+                    con.add(bais,"", RDFFormat.RDFXML);
+                } catch (IOException ioe) {
+                    throw new ServletException(ioe);
+                } catch (org.openrdf.repository.RepositoryException rre) {
+                    throw new ServletException(rre);
+                } catch (org.openrdf.rio.RDFParseException rpe) {
+                    throw new ServletException(rpe);
+                }
+}
+
+
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
@@ -245,8 +280,9 @@ public class TestServlet extends HttpServlet {
             if (pathInfo.equals("/index.html")) {
                 String recordId = paramMap.get("record_id")[0];
                 oauthValues = doDance_step1(recordId);
-                System.out.println("in doGet index.html: " + oauthValues[0] + ", " + oauthValues[1] + ", " + oauthValues[2]);
-                res.sendRedirect(oauthValues[2]);
+                System.out.println("in doGet index.html: " + oauthValues[0] + ", " + oauthValues[1]);
+//                http://sandbox.smartplatforms.org/oauth/authorize?oauth_token=xAWNDyLjFGYrOUHMftAg&oauth_callback=oob
+                  res.sendRedirect(authorizeURL + "?oauth_token=" + oauthValues[0] + "&oauth_callback=oob");
 
 //                ros.write("<html><head><title>testing SMArtClient oauth</title></head><body>".getBytes());
 //                ros.write(("<p>request_token: " + oauthValues[0] + "</p>").getBytes());
@@ -266,7 +302,9 @@ public class TestServlet extends HttpServlet {
 
                 String allergyreport = getAllergyReport(oauthValues[0], oauthValues[1], requestTokenSecret_recordId[1]);
 
-                ros.write("<html><head><title>testing SMArtClient oauth page-2</title></head><body>".getBytes());
+                ros.write("<html><head><title>testing SMArtClient oauth page-2</title>".getBytes());
+                ros.write(allergyReportStyle.getBytes());
+                ros.write("</head><body>".getBytes());
                 ros.write(("<span>recordId: " + requestTokenSecret_recordId[1] + "</span><br/>").getBytes());
                 ros.write(("<span>access_token: " + oauthValues[0] + "</span><br/>").getBytes());
                 ros.write(("<span>access_token_secret: " + oauthValues[1] + "</span>").getBytes());
@@ -276,19 +314,6 @@ public class TestServlet extends HttpServlet {
                         allergyFormC + alrgySelect + allergyFormD).getBytes());
                 ros.write("</body></html>".getBytes());
             }
-//            else if (pathInfo.equals("/new_allergy")) {    //  /after_auth
-//                String allergy_substance = paramMap.get("allergy_substance")[0];
-//                String allergy_category = paramMap.get("allergy_category")[0];
-//                String allergy_severity = paramMap.get("allergy_severity")[0];
-//                String allergy_reaction = paramMap.get("allergy_reaction")[0];
-//                ros.write("<html><head><title>testing SMArtClient working on adding allergy</title></head><body>".getBytes());
-//                ros.write(("<p>allergy: " + alrgyMap.get(allergy_substance) + "</p>").getBytes());
-//                ros.write(("<p>allergy substance: " + allergy_substance + "</p>").getBytes());
-//                ros.write(("<p>allergy category: " + allergy_category + "</p>").getBytes());
-//                ros.write(("<p>allergy severity: " + allergy_severity + "</p>").getBytes());
-//                ros.write(("<p>allergy reaction: " + allergy_reaction + "</p>").getBytes());
-//                ros.write("</body></html>".getBytes());
-//            }
             else {
                 throw new ServletException("unexpected pathInfo: " + pathInfo);
             }
@@ -347,11 +372,17 @@ public class TestServlet extends HttpServlet {
             TupleQueryResult tqr = tq.evaluate();
             while (tqr.hasNext()) {
                 BindingSet bns = tqr.next();
-                String title = bns.getValue("?gtitle").stringValue();
-                String category = bns.getValue("?gcategory").stringValue();
-                String substance = bns.getValue("?gsubstance").stringValue();
-                String severity = bns.getValue("?gseverity").stringValue();
-                String reaction = bns.getValue("?greaction").stringValue();
+                Set<String> bindingNames = bns.getBindingNames();
+                StringBuffer tttbn = new StringBuffer();
+                for (String abn : bindingNames) {
+                    tttbn.append(abn + " -- ");
+                }
+                System.out.println("bns: " + tttbn);
+                String title = bns.getValue("gtitle").stringValue();
+                String category = bns.getValue("gcategory").stringValue();
+                String substance = bns.getValue("gsubstance").stringValue();
+                String severity = bns.getValue("severity").stringValue();
+                String reaction = bns.getValue("reaction").stringValue();
 
                 retVal.append("<tr><td>" + title +
                         "</td><td>" + category +
@@ -370,12 +401,47 @@ public class TestServlet extends HttpServlet {
 
         return retVal.toString();
     }
-/*
-
-        smartClient.authorizeRequestToken(tokenSecret[0]);
-        ///smartClient.getAccessToken(tokenSecret[0]);
-        tokensSecrets.put(tokenSecret[0], tokenSecret[1]);
-
-*/
-
 }
+/*<style>
+div.ui-datepicker { font-size: 80%; }
+
+.tabselector { width: auto; border-bottom: 2px solid #a0a0a0; padding: 0px 0 0 0px; margin:10px 0px 0px 0px; }
+
+.tab-unselected { display: inline; padding: 2px 7px 0 7px; background: #ffffff;  margin:4px 0px 0px 7px;
+                  border-top: 2px solid #a0a0a0;
+                  border-right: 2px solid #a0a0a0;
+                  border-bottom: 0px solid #a0a0a0;
+                  border-left: 2px solid #a0a0a0;
+                  cursor:pointer;}
+
+.tab-selected { display: inline; padding: 4px 7px 0 7px; background: #ffffff; margin:4px 0px 0px 7px;
+                border-top: 2px solid #a0a0a0;
+                border-right: 2px solid #a0a0a0;
+                border-bottom: 3px solid #ffffff;
+                border-left: 2px solid #a0a0a0;
+}
+
+.profileWaiting {
+       position:absolute;left:0;top:0;
+       height: 120px;
+       background-image: url('_SERVER-BASE-URL_/ningDivo/ajax-loader.gif');
+       background-position:center;
+       background-repeat:no-repeat;
+}
+
+.graphHelpShow { position:relative; top:38px; cursor:help; z-index:1; }
+.graphHelpHide { display:none; }
+
+.showModal {
+    position:absolute;top:50px;left:50px;
+    z-index:10;
+    cursor:pointer;
+}
+.hideModal { display:none; }
+
+.profileGraphNoneShow { position:relative; left:120px; top:-200px; cursor:pointer; }
+.profileGraphNoneHide { display:none; }
+
+
+</style>
+*/

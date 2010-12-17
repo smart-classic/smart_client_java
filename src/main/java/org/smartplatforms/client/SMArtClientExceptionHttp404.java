@@ -1,6 +1,6 @@
 package org.smartplatforms.client;
 
-class SMArtClientExceptionHttp404 extends SMArtClientException {
+public class SMArtClientExceptionHttp404 extends SMArtClientException {
     public SMArtClientExceptionHttp404() { super(); }
     public SMArtClientExceptionHttp404(String message) { super(message); }
     public SMArtClientExceptionHttp404(String message, Throwable cause) { super(message, cause); }

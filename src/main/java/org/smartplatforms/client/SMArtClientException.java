@@ -1,6 +1,6 @@
 package org.smartplatforms.client;
 
-class SMArtClientException extends Exception {
+public class SMArtClientException extends Exception {
     public SMArtClientException() { super(); }
     public SMArtClientException(String message) { super(message); }
     public SMArtClientException(String message, Throwable cause) { super(message, cause); }
