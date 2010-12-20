@@ -1,0 +1,28 @@
+The Servlet can be run as "Developers Sandbox" in the context of
+sandbox.smartplatforms.org as described by
+http://wiki.chip.org/smart-project/index.php/Developers_Documentation:_Getting_Started
+
+1) Deploy SMArt_client_test_servlet.war in your favorite servlet
+container.  If testing against http://sandbox-api.smartplatforms.org
+with the pre-available consumer key/secret and oauth_callback URL, you
+can deploy as is.  Otherwise you might have to edit web.xml within the
+.war before deploying.
+
+2) Edit index.html and after_auth.html so the redirects redirect to
+where your servlet container runs the servlet.  The last parts of the
+redirect URLs, "SMArtClientJavaOAuthTester/after_auth.html" are
+unchanging, unless you edit web.xml to change the
+"SMArtClientJavaOAuthTester" part.  The earlier parts of the redirect
+URLs depend on your servlet container and how that container is
+deployed.
+
+3) Copy index.html and after_auth.html to your web server (typically
+this is also your serlvet container) in a way that makes them
+accessible to the sandbox as "http://localhost:8000/index.html" and
+"http://localhost:8000/after_auth.html".  You might have to
+re-configure your servlet container to use port 8000.  If you will be
+using different URLs for these files, you must coordinate with the
+sandbox administrators.
+
+4) To log in and run your app, follow the instructions at:
+ http://wiki.chip.org/smart-project/index.php/Developers_Documentation:_Getting_Started
