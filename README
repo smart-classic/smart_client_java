@@ -1,0 +1,6 @@
+To get started with the SMArt API Java client library:
+
+  git clonegit@github.com:chb/smart_client_java.git
+  mvn install
+  mvn javadoc:javadoc
+
