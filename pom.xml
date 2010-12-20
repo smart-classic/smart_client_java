@@ -3,6 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.smartplatforms</groupId>
   <artifactId>SMArt_client</artifactId>
+    <version>0.1</version>
   <packaging>jar</packaging>
   <name>SMArt_client</name>
   <url>http://maven.apache.org</url>
@@ -77,5 +78,5 @@
       <version>2.3.2</version>
     </dependency>
   </dependencies>
-    <version>0.1</version>
+
 </project>

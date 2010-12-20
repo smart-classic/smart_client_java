@@ -15,7 +15,7 @@
     <display-name>SMArt_client_java OAuth dance tester</display-name>
     <servlet>
         <servlet-name>SMArtClientJavaOAuthTester</servlet-name>
-        <servlet-class>org.smartplatforms.client.TestServlet</servlet-class>
+        <servlet-class>org.smartplatforms.smart_client_java_test.TestServlet</servlet-class>
         <init-param>
             <param-name>consumerKey</param-name>
             <param-value>developer-sandbox@apps.smartplatforms.org</param-value>
