@@ -75,7 +75,7 @@ public class TestServlet extends HttpServlet {
     Map<String,String> alrgyMap = new HashMap<String,String>();
     String alrgySelect = null;
 
-    private String allergyFormA = "<form action=\"http://localhost:8000/SMArtClientJavaOAuthTester"; // + getContextPath()
+    private String allergyFormA = "<form action=\"http://localhost:8000"; 
     private String allergyFormB = "\" method=\"post\">\n" +
 "<input type=\"hidden\" name=\"recordId\" value=\"";
     private String allergyFormC =
@@ -233,9 +233,11 @@ public class TestServlet extends HttpServlet {
                 } catch (org.openrdf.rio.RDFHandlerException rhe) {
                     throw new ServletException(rhe);
                 }
+           System.out.println("getServletPath: " + req.getServletPath());
+           System.out.println("getContextPath: " + req.getContextPath());
                 ros.write(("<p>" + allergyreport + "</p>").getBytes());
                 ros.write(("<em>" + recordId + "</em>" +
-                        allergyFormA + req.getContextPath() + "/new_allergy" +
+                        allergyFormA + req.getContextPath() + req.getServletPath() + "/new_allergy" +
                         allergyFormB + recordId +
                         allergyFormC + alrgySelect + allergyFormD).getBytes());
                 ros.write("</body></html>".getBytes());
@@ -243,8 +245,6 @@ public class TestServlet extends HttpServlet {
             else {
                 throw new ServletException("unexpected pathInfo: " + pathInfo);
             }
-//        } catch (SMArtClientException sce) {
-//            throw new ServletException(sce);
         } catch (IOException ioe) {
             throw new ServletException(ioe);
         }
@@ -316,7 +316,9 @@ public class TestServlet extends HttpServlet {
                 ros.write(("<span>access_token: " + oauthValues[0] + "</span><br/>").getBytes());
                 ros.write(("<span>access_token_secret: " + oauthValues[1] + "</span>").getBytes());
                 ros.write(("<p>" + allergyreport + "</p>").getBytes());
-                ros.write((allergyFormA + req.getContextPath() + "/new_allergy" +
+           System.out.println("getServletPath: " + req.getServletPath());
+           System.out.println("getContextPath: " + req.getContextPath());
+                ros.write((allergyFormA + req.getContextPath() + req.getServletPath() + "/new_allergy" +
                         allergyFormB + requestTokenSecret_recordId[1] +
                         allergyFormC + alrgySelect + allergyFormD).getBytes());
                 ros.write("</body></html>".getBytes());
@@ -409,46 +411,4 @@ public class TestServlet extends HttpServlet {
         return retVal.toString();
     }
 }
-/*<style>
-div.ui-datepicker { font-size: 80%; }
 
-.tabselector { width: auto; border-bottom: 2px solid #a0a0a0; padding: 0px 0 0 0px; margin:10px 0px 0px 0px; }
-
-.tab-unselected { display: inline; padding: 2px 7px 0 7px; background: #ffffff;  margin:4px 0px 0px 7px;
-                  border-top: 2px solid #a0a0a0;
-                  border-right: 2px solid #a0a0a0;
-                  border-bottom: 0px solid #a0a0a0;
-                  border-left: 2px solid #a0a0a0;
-                  cursor:pointer;}
-
-.tab-selected { display: inline; padding: 4px 7px 0 7px; background: #ffffff; margin:4px 0px 0px 7px;
-                border-top: 2px solid #a0a0a0;
-                border-right: 2px solid #a0a0a0;
-                border-bottom: 3px solid #ffffff;
-                border-left: 2px solid #a0a0a0;
-}
-
-.profileWaiting {
-       position:absolute;left:0;top:0;
-       height: 120px;
-       background-image: url('_SERVER-BASE-URL_/ningDivo/ajax-loader.gif');
-       background-position:center;
-       background-repeat:no-repeat;
-}
-
-.graphHelpShow { position:relative; top:38px; cursor:help; z-index:1; }
-.graphHelpHide { display:none; }
-
-.showModal {
-    position:absolute;top:50px;left:50px;
-    z-index:10;
-    cursor:pointer;
-}
-.hideModal { display:none; }
-
-.profileGraphNoneShow { position:relative; left:120px; top:-200px; cursor:pointer; }
-.profileGraphNoneHide { display:none; }
-
-
-</style>
-*/
