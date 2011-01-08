@@ -120,7 +120,15 @@ public class GenerateFromSmartOwl {
 "        this.oauthCallback = oauthCallback;\n" +
 "        smartUtils = new Utils(consumerKey, consumerSecret, baseURL,\n" +
 "                new DefaultResponseTypeConversion(), httpTimeout);\n" +
+"    }\n"+
+"    public void setAccessToken(HttpServletRequest r){"+
+"    	this.smartUtils.setAccessToken(r);"+
+"    }"+
+"    "+
+"    public void setAccessToken(String token, String secret){"+
+"    	this.smartUtils.setAccessToken(token, secret);"+
 "    }\n";
+
 
 
 
@@ -321,7 +329,7 @@ public class GenerateFromSmartOwl {
 
 
     private GenerateFromSmartOwl() {
-        expectedPredicates = Arrays.asList("description", "method", "path", "target", "by_internal_id", "category");
+        expectedPredicates = Arrays.asList("description", "method", "path", "target", "by_internal_id", "category", "above");
     }
 
     public static void main( String[] args )
@@ -361,7 +369,7 @@ public class GenerateFromSmartOwl {
 
         RepositoryConnection con = myRepository.getConnection();
 
-        File apiOwlFile = new File("/home/nate/SMArt/smart_server/smart/document_processing/schema/smart.owl");
+        File apiOwlFile = new File("/home/jmandel/smart/smart_server/smart/document_processing/schema/smart.owl");
         con.add(apiOwlFile, null, RDFFormat.RDFXML, new Resource[0]);
 
         String myfirstsparql =

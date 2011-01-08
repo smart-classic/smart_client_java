@@ -1,6 +1,5 @@
 package org.smartplatforms.client;
 
-
 import org.openrdf.repository.RepositoryConnection;
 
 import java.io.InputStream;
@@ -34,7 +33,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.OAuthProviderListener;
 
-public class SMArtClient {
+class SMArtClient {
 
     private String consumerKey = null;
     private String consumerSecret = null;
@@ -43,17 +42,14 @@ public class SMArtClient {
     private String oauthCallback = null;
     private String authorizeURL = null;
     private Utils smartUtils = null;
-
-    private DefaultResponseTypeConversion defaultResponseTypeConversion = null;
     int httpTimeout = 30000;
 
     public SMArtClient(String consumerKey, String consumerSecret, String baseURL)
             throws SMArtClientException {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
-        defaultResponseTypeConversion = new DefaultResponseTypeConversion();
         smartUtils = new Utils(consumerKey, consumerSecret, baseURL,
-                defaultResponseTypeConversion, httpTimeout);
+                new DefaultResponseTypeConversion(), httpTimeout);
     }
 
     /**
@@ -73,10 +69,19 @@ public class SMArtClient {
         this.authorizeURL = authorizeURL; // this param not actually used, because authorize address is in the response to requesTokenURL
         this.accessTokenURL = accessTokenURL;
         this.oauthCallback = oauthCallback;
-        defaultResponseTypeConversion = new DefaultResponseTypeConversion();
         smartUtils = new Utils(consumerKey, consumerSecret, baseURL,
-                defaultResponseTypeConversion, httpTimeout);
+                new DefaultResponseTypeConversion(), httpTimeout);
     }
+
+    public void setAccessToken(HttpServletRequest r){
+    	this.smartUtils.setAccessToken(r);
+    }
+    
+    public void setAccessToken(String token, String secret){
+    	this.smartUtils.setAccessToken(token, secret);
+    }
+
+
     /** Get a single allergy -- records/{record_id}/allergies/{allergy_id}
     * @param recordId server's record ID
     * @param allergyId server's internal ID for this allergy document
@@ -190,67 +195,148 @@ public class SMArtClient {
         return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
     }
 
-    /** Get a single fulfillment -- records/{record_id}/medications/{medication_id}/fulfillments/{fulfillment_id}
+    /** Get a single fulfillment -- records/{record_id}/fulfillments/{fulfillment_id}
     * @param recordId server's record ID
-    * @param medicationId server's internal ID for this medication document
     * @param fulfillmentId server's internal ID for this fulfillment document
     * @param accessToken OAuth access token
     * @param accessTokenSecret OAuth access token secret
     * @param options see class note
     */
-    public Object records_X_medications_X_fulfillments_XGET(String recordId, String medicationId, String fulfillmentId,
+    public Object records_X_fulfillments_XGET(String recordId, String fulfillmentId,
             String accessToken, String accessTokenSecret, Map<String,Object> options)
             throws org.smartplatforms.client.SMArtClientException {
-        String restURL = "records/" + recordId + "/medications/" + medicationId + "/fulfillments/" + fulfillmentId;
+        String restURL = "records/" + recordId + "/fulfillments/" + fulfillmentId;
         return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
     }
 
-    /** Delete a single fulfillment -- records/{record_id}/medications/{medication_id}/fulfillments/{fulfillment_id}
+    /** Delete a single fulfillment -- records/{record_id}/fulfillments/{fulfillment_id}
     * @param recordId server's record ID
-    * @param medicationId server's internal ID for this medication document
     * @param fulfillmentId server's internal ID for this fulfillment document
     * @param accessToken OAuth access token
     * @param accessTokenSecret OAuth access token secret
     * @param options see class note
     */
-    public Object records_X_medications_X_fulfillments_XDELETE(String recordId, String medicationId, String fulfillmentId,
+    public Object records_X_fulfillments_XDELETE(String recordId, String fulfillmentId,
             String accessToken, String accessTokenSecret, Map<String,Object> options)
             throws org.smartplatforms.client.SMArtClientException {
-        String restURL = "records/" + recordId + "/medications/" + medicationId + "/fulfillments/" + fulfillmentId;
+        String restURL = "records/" + recordId + "/fulfillments/" + fulfillmentId;
         return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
     }
 
-    /** Get a single fulfillment -- records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}
+    /** Get a single fulfillment -- records/{record_id}/fulfillments/external_id/{external_id}
     * @param recordId server's record ID
-    * @param medExternalId ID assigned to the medication document encompassing this fulfillment
     * @param externalId external ID
     * @param accessToken OAuth access token
     * @param accessTokenSecret OAuth access token secret
     * @param options see class note
     */
-    public Object records_X_medications_external_id_X_fulfillments_external_id_XGET(String recordId, String medExternalId, String externalId,
+    public Object records_X_fulfillments_external_id_XGET(String recordId, String externalId,
             String accessToken, String accessTokenSecret, Map<String,Object> options)
             throws org.smartplatforms.client.SMArtClientException {
-        String restURL = "records/" + recordId + "/medications/external_id/" + medExternalId + "/fulfillments/external_id/" + externalId;
+        String restURL = "records/" + recordId + "/fulfillments/external_id/" + externalId;
         return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
     }
 
-    /** Delete a single fulfillment -- records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}
+    /** Delete a single fulfillment -- records/{record_id}/fulfillments/external_id/{external_id}
     * @param recordId server's record ID
-    * @param medExternalId ID assigned to the medication document encompassing this fulfillment
     * @param externalId external ID
     * @param accessToken OAuth access token
     * @param accessTokenSecret OAuth access token secret
     * @param options see class note
     */
-    public Object records_X_medications_external_id_X_fulfillments_external_id_XDELETE(String recordId, String medExternalId, String externalId,
+    public Object records_X_fulfillments_external_id_XDELETE(String recordId, String externalId,
             String accessToken, String accessTokenSecret, Map<String,Object> options)
             throws org.smartplatforms.client.SMArtClientException {
-        String restURL = "records/" + recordId + "/medications/external_id/" + medExternalId + "/fulfillments/external_id/" + externalId;
+        String restURL = "records/" + recordId + "/fulfillments/external_id/" + externalId;
         return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
     }
 
-    /** Put a single fulfillment by its external key -- records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}
+    /** Put a single fulfillment by its external key -- records/{record_id}/fulfillments/external_id/{external_id}
+    * @param recordId server's record ID
+    * @param externalId external ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param requestBody data to send as request body
+    * @param requestBodyContentType typically application/x-www-form-urlencoded
+    * @param options see class note
+    */
+    public Object records_X_fulfillments_external_id_XPUT(String recordId, String externalId,
+            String accessToken, String accessTokenSecret, String requestBody, String requestContentType, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/fulfillments/external_id/" + externalId;
+        return smartUtils.smartRequest("PUT", restURL, null, accessToken, accessTokenSecret, requestBody, requestContentType, null, options);
+    }
+
+    /** Get all fulfillments in the record. -- records/{record_id}/fulfillments/
+    * @param recordId server's record ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_fulfillments_GET(String recordId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/fulfillments/";
+        return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Delete all fulfillments in the record. -- records/{record_id}/fulfillments/
+    * @param recordId server's record ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_fulfillments_DELETE(String recordId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/fulfillments/";
+        return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Add fulfillments in the absence of a medication -- records/{record_id}/fulfillments/
+    * @param recordId server's record ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param requestBody data to send as request body
+    * @param requestBodyContentType typically application/x-www-form-urlencoded
+    * @param options see class note
+    */
+    public Object records_X_fulfillments_POST(String recordId,
+            String accessToken, String accessTokenSecret, String requestBody, String requestContentType, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/fulfillments/";
+        return smartUtils.smartRequest("POST", restURL, null, accessToken, accessTokenSecret, requestBody, requestContentType, null, options);
+    }
+
+    /** Get all fulfillments for a given medication -- records/{record_id}/medications/{medication_id}/fulfillments/
+    * @param recordId server's record ID
+    * @param medicationId server's internal ID for this medication document
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_medications_X_fulfillments_GET(String recordId, String medicationId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/medications/" + medicationId + "/fulfillments/";
+        return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Deletefulfillments for a given medication -- records/{record_id}/medications/{medication_id}/fulfillments/
+    * @param recordId server's record ID
+    * @param medicationId server's internal ID for this medication document
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_medications_X_fulfillments_DELETE(String recordId, String medicationId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/medications/" + medicationId + "/fulfillments/";
+        return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Put a single fulfillmentby its external key -- records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}
     * @param recordId server's record ID
     * @param medExternalId ID assigned to the medication document encompassing this fulfillment
     * @param externalId external ID
@@ -265,34 +351,6 @@ public class SMArtClient {
             throws org.smartplatforms.client.SMArtClientException {
         String restURL = "records/" + recordId + "/medications/external_id/" + medExternalId + "/fulfillments/external_id/" + externalId;
         return smartUtils.smartRequest("PUT", restURL, null, accessToken, accessTokenSecret, requestBody, requestContentType, null, options);
-    }
-
-    /** Get a all fulfillments for a given medication -- records/{record_id}/medications/{medication_id}/fulfillments/
-    * @param recordId server's record ID
-    * @param medicationId server's internal ID for this medication document
-    * @param accessToken OAuth access token
-    * @param accessTokenSecret OAuth access token secret
-    * @param options see class note
-    */
-    public Object records_X_medications_X_fulfillments_GET(String recordId, String medicationId,
-            String accessToken, String accessTokenSecret, Map<String,Object> options)
-            throws org.smartplatforms.client.SMArtClientException {
-        String restURL = "records/" + recordId + "/medications/" + medicationId + "/fulfillments/";
-        return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
-    }
-
-    /** Delete all fulfillments for a given medication -- records/{record_id}/medications/{medication_id}/fulfillments/
-    * @param recordId server's record ID
-    * @param medicationId server's internal ID for this medication document
-    * @param accessToken OAuth access token
-    * @param accessTokenSecret OAuth access token secret
-    * @param options see class note
-    */
-    public Object records_X_medications_X_fulfillments_DELETE(String recordId, String medicationId,
-            String accessToken, String accessTokenSecret, Map<String,Object> options)
-            throws org.smartplatforms.client.SMArtClientException {
-        String restURL = "records/" + recordId + "/medications/" + medicationId + "/fulfillments/";
-        return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
     }
 
     /** Add fulfillments for a given medication -- records/{record_id}/medications/{medication_id}/fulfillments/
@@ -729,9 +787,163 @@ public class SMArtClient {
         return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
     }
 
+    /** Get a single lab result -- records/{record_id}/lab_results/{lab_result_id}
+    * @param recordId server's record ID
+    * @param labResultId null
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_lab_results_XGET(String recordId, String labResultId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_results/" + labResultId;
+        return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Delete a single lab result -- records/{record_id}/lab_results/{lab_result_id}
+    * @param recordId server's record ID
+    * @param labResultId null
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_lab_results_XDELETE(String recordId, String labResultId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_results/" + labResultId;
+        return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Get all lab results for a given record -- records/{record_id}/lab_results/
+    * @param recordId server's record ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_lab_results_GET(String recordId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_results/";
+        return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Delete all lab results from a given record -- records/{record_id}/lab_results/
+    * @param recordId server's record ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_lab_results_DELETE(String recordId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_results/";
+        return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Add lab results to a given record -- records/{record_id}/lab_results/
+    * @param recordId server's record ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param requestBody data to send as request body
+    * @param requestBodyContentType typically application/x-www-form-urlencoded
+    * @param options see class note
+    */
+    public Object records_X_lab_results_POST(String recordId,
+            String accessToken, String accessTokenSecret, String requestBody, String requestContentType, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_results/";
+        return smartUtils.smartRequest("POST", restURL, null, accessToken, accessTokenSecret, requestBody, requestContentType, null, options);
+    }
+
+    /** Add lab results to a given record by external key -- records/{record_id}/lab_results/external_id/{external_id}
+    * @param recordId server's record ID
+    * @param externalId external ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param requestBody data to send as request body
+    * @param requestBodyContentType typically application/x-www-form-urlencoded
+    * @param options see class note
+    */
+    public Object records_X_lab_results_external_id_XPUT(String recordId, String externalId,
+            String accessToken, String accessTokenSecret, String requestBody, String requestContentType, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_results/external_id/" + externalId;
+        return smartUtils.smartRequest("PUT", restURL, null, accessToken, accessTokenSecret, requestBody, requestContentType, null, options);
+    }
+
+    /** Get a single lab result panel -- records/{record_id}/lab_result_panels/{lab_result_panel_id}
+    * @param recordId server's record ID
+    * @param labResultPanelId null
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_lab_result_panels_XGET(String recordId, String labResultPanelId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_result_panels/" + labResultPanelId;
+        return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Delete a single lab result panel -- records/{record_id}/lab_result_panels/{lab_result_panel_id}
+    * @param recordId server's record ID
+    * @param labResultPanelId null
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_lab_result_panels_XDELETE(String recordId, String labResultPanelId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_result_panels/" + labResultPanelId;
+        return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Get all lab result panels for a given record -- records/{record_id}/lab_result_panels/
+    * @param recordId server's record ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_lab_result_panels_GET(String recordId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_result_panels/";
+        return smartUtils.smartRequest("GET", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Delete all lab result panels from a given record -- records/{record_id}/lab_result_panels/
+    * @param recordId server's record ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param options see class note
+    */
+    public Object records_X_lab_result_panels_DELETE(String recordId,
+            String accessToken, String accessTokenSecret, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_result_panels/";
+        return smartUtils.smartRequest("DELETE", restURL, null, accessToken, accessTokenSecret, null, null, null, options);
+    }
+
+    /** Add lab result panels to a given record -- records/{record_id}/lab_result_panels/
+    * @param recordId server's record ID
+    * @param accessToken OAuth access token
+    * @param accessTokenSecret OAuth access token secret
+    * @param requestBody data to send as request body
+    * @param requestBodyContentType typically application/x-www-form-urlencoded
+    * @param options see class note
+    */
+    public Object records_X_lab_result_panels_POST(String recordId,
+            String accessToken, String accessTokenSecret, String requestBody, String requestContentType, Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+        String restURL = "records/" + recordId + "/lab_result_panels/";
+        return smartUtils.smartRequest("POST", restURL, null, accessToken, accessTokenSecret, requestBody, requestContentType, null, options);
+    }
+
     /** get request token
      * @return [token, secret, redirectURL]
-    */ /*
+    */
     public String[] getRequestToken(String recordId) throws SMArtClientException {
         if (requestTokenURL == null) {
             throw new SMArtClientException("used constructor without requestTokenURL");
@@ -752,7 +964,7 @@ public class SMArtClient {
 
             List<String[]> additionalParams = new ArrayList<String[]>();
             additionalParams.add(new String[] { "offline", "true" } );
-            additionalParams.add(new String[] { "record_id", recordId /+"2000000008"+/ } );
+            additionalParams.add(new String[] { "record_id", recordId /*"2000000008"*/ } );
             oprov.setListener(new OAuthProviderListenerForSMArt(additionalParams));
             urlWithRequestToken = oprov.retrieveRequestTokenAdditionalParameters(
                     oauthConsumer, oauthCallback, "offline", "true", "record_id", recordId);
@@ -772,63 +984,9 @@ public class SMArtClient {
         } catch (oauth.signpost.exception.OAuthCommunicationException comE) {
             throw new SMArtClientException(comE);
         }
-
 System.out.println("requestToken: " + urlWithRequestToken);
-// oauth_token_secret=9nf5ZMwEtZ2N6CNeBzb0&oauth_token=Z8eOu4OUTkhZfceB6wK3
-
         return tokenSecret; //urlWithRequestToken;
     }
-*/
-
-    /** get request token without using signpost OAuthProvider class,
-     * because OAuthProvider does not allow extra params
-     * @return [token, secret, redirectURL]
-    */
-    public String[] getRequestToken(String recordId) throws SMArtClientException {
-        if (requestTokenURL == null) {
-            throw new SMArtClientException("used constructor without requestTokenURL");
-        }
-        //AbstractHttpClient httpClient = new DefaultHttpClient();
-
-        CommonsHttpOAuthConsumer oauthConsumer =
-                new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
-
-        HttpParameters addParams = new HttpParameters();
-        addParams.put("oauth_callback", oauthCallback);
-
-        // these are the extras OAuthProvider doesn't accomdate
-        addParams.put("offline", "true");
-        addParams.put("record_id", recordId /*"2000000008"*/);
-
-        // sign(..) method will add any oauth_*** here to Authorization header, via signing strategy
-        oauthConsumer.setAdditionalParameters(addParams);
-
-        // ones not added by sign(...) to Authorization header must be added to request body
-        ByteArrayEntity bae = new ByteArrayEntity(("offline=true&record_id=" + recordId).getBytes());
-        bae.setContentType("application/x-www-form-urlencoded");
-        HttpPost hcRequest = new HttpPost(requestTokenURL);
-        hcRequest.setEntity(bae);
-        try {
-            oauthConsumer.sign(hcRequest);
-        } catch (oauth.signpost.exception.OAuthMessageSignerException mse) {
-            throw new SMArtClientException(mse);
-        } catch (oauth.signpost.exception.OAuthExpectationFailedException efe) {
-            throw new SMArtClientException(efe);
-        } catch (oauth.signpost.exception.OAuthCommunicationException oce) {
-            throw new SMArtClientException(oce);
-        }
-
-        org.apache.http.HttpResponse httpResponse = smartUtils.smartExecute(hcRequest, new HashMap<String,Object>());
-        String retStr = (String) smartUtils.smartRequestResponse(
-                httpResponse, null, "POST " + requestTokenURL, new HashMap<String,Object>());
-
-        Map<String,String> retMap = defaultResponseTypeConversion.mapFromFormEncodedString(retStr);
-//        http://sandbox.smartplatforms.org/oauth/authorize?oauth_token=xAWNDyLjFGYrOUHMftAg&oauth_callback=oob
-//        oauth_token_secret=9nf5ZMwEtZ2N6CNeBzb0&oauth_token=Z8eOu4OUTkhZfceB6wK3
-        String[] retVal = new String[] { retMap.get("oauth_token"), retMap.get("oauth_token_secret") };
-        return retVal;
-    }
-
 
     public String[] getAccessToken(String requestToken, String requestTokenSecret, String verifier) throws SMArtClientException {
         AbstractHttpClient httpClient = new DefaultHttpClient();
@@ -869,7 +1027,7 @@ System.out.println("requestToken: " + urlWithRequestToken);
 
     public String[] getAccessToken_GET(String requestToken, String requestTokenSecret, String verifier)
             throws SMArtClientException {
-        //AbstractHttpClient httpClient = new DefaultHttpClient();
+        AbstractHttpClient httpClient = new DefaultHttpClient();
         CommonsHttpOAuthConsumer oauthConsumer =
                 new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
         System.out.println("in getAccessToken_GET: " + accessTokenURL + " -- " +
@@ -879,7 +1037,7 @@ System.out.println("requestToken: " + urlWithRequestToken);
         addParams.put("oauth_verifier", verifier, true);
         oauthConsumer.setAdditionalParameters(addParams);
         oauthConsumer.setTokenWithSecret(requestToken, requestTokenSecret);
-        Map<String,String> srr = null;
+        String srr = null;
         try {
             // this should mutate oauthConsuer, adding the authorized token/secret
             String oldDebug = System.getProperty("debug");
@@ -890,8 +1048,7 @@ System.out.println("requestToken: " + urlWithRequestToken);
             Map<String,Object> options = new HashMap<String,Object>();
             org.apache.http.HttpResponse httpResponse =
                     smartUtils.smartExecute(hcRequest, options);
-            srr = (Map<String,String>) smartUtils.smartRequestResponse(
-                    httpResponse, "application/x-www-form-urlencoded", "GET " + accessTokenURL, options);
+            srr = (String) smartUtils.smartRequestResponse(httpResponse, null, "GET " + accessTokenURL, options);
 
             System.out.println("access token response: " + srr.getClass().getName()  + ": " + srr);
 
@@ -905,13 +1062,18 @@ System.out.println("requestToken: " + urlWithRequestToken);
             throw new SMArtClientException(comE);
         }
         String[] retVal = new String[2];
-        retVal[0] = srr.get("oauth_token");
-        retVal[1] = srr.get("oauth_token_secret");
-// java.util.HashMap: {
-//        oauth_token=c8YX9dnDd1AgSQF1jmUn,
-//        user_id=b2e6565b-e886-4e1c-8d5a-f44f8876a654,
-//        oauth_token_secret=F7ogawp4IoblBzqC8sX4,
-//        record_id=1000000005}
+        String[] srrA = srr.split("&");
+        for (int ii = 0; ii < srrA.length; ii++) {
+            String[] srrAA = srrA[ii].split("=");
+            if (srrAA.length != 2) {
+                throw new SMArtClientException("unexpected response from getAccessToken: " + srr);
+            }
+            if (srrAA[0].equals("ouath_token")) {
+                retVal[0] = srrAA[1];
+            } else if (srrAA[0].equals("oauth_token_secret")) {
+                retVal[1] = srrAA[1];
+            }
+        }
 //        retVal[0] = oauthConsumer.getToken();
 //        retVal[1] = oauthConsumer.getTokenSecret();
         if (retVal[0] == null || retVal[1] == null) {

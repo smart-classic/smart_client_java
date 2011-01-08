@@ -4,12 +4,15 @@ package org.smartplatforms.client;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import java.net.URLEncoder;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -36,12 +39,14 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.StatusLine;
 import org.apache.http.HttpEntity;
 
+import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.commonshttp.HttpRequestAdapter;
 
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.http.HttpParameters;
 
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -60,6 +65,9 @@ public class Utils {
     private int defaultHttpTimeout = 7000;
     private ResponseTypeConversion defaultResponseTypeConversion = null;
 
+    private String accessToken = null;
+    private String accessSecret = null;
+    
     public Utils(String consumerKey, String consumerSecret, String baseURL,
             ResponseTypeConversion responseTypeConversion, Integer httpTimeout)
             throws SMArtClientException {
@@ -115,6 +123,44 @@ public class Utils {
         }
 
         return xstr;
+    }
+
+	public static String getCookieValue(Cookie[] cookies, String cookieName,
+			String defaultValue) {
+		for (int i = 0; i < cookies.length; i++) {
+			Cookie cookie = cookies[i];
+			if (cookieName.equals(cookie.getName()))
+				return (cookie.getValue());
+		}
+		return (defaultValue);
+	}
+
+    void setAccessToken(HttpServletRequest request) {
+
+		String cn = request.getParameter("cookie_name");
+		String c = getCookieValue(request.getCookies(), cn, null);
+		try {
+			c = java.net.URLDecoder.decode(c, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		c = c.split("Authorization: ")[1];
+		HttpParameters p = OAuth.oauthHeaderToParamsMap(c);
+		String accessToken = p.getFirst("smart_oauth_token");
+		String secret = p.getFirst("smart_oauth_token_secret");
+		
+		this.accessToken = accessToken;
+		this.accessSecret = secret;
+  
+    }
+
+    void setAccessToken(String accessToken, String secret) {
+
+		this.accessToken = accessToken;
+		this.accessSecret = secret;
+  
     }
 
     void signWithSignpost(
@@ -194,7 +240,7 @@ public class Utils {
         if (options == null) { options = new HashMap<String,Object>(); }
 
         HttpResponse response = phaRequestPart1(
-            reqMeth, reletivePath, queryString, phaToken, phaTokenSecret, requestBody, requestContentType, options);
+            reqMeth, reletivePath, queryString, this.accessToken, this.accessSecret, requestBody, requestContentType, options);
 
         return smartRequestResponse(response, responseContentType, reqMeth + " " + reletivePath, options);
     }
