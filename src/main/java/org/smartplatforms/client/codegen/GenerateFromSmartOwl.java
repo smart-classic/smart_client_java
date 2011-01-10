@@ -86,7 +86,7 @@ public class GenerateFromSmartOwl {
 "import oauth.signpost.exception.OAuthMessageSignerException;\n" +
 "import oauth.signpost.exception.OAuthNotAuthorizedException;\n" +
 "import oauth.signpost.OAuthProviderListener;\n\n" +
-"class SMArtClient {\n\n" +
+"public class SMArtClient {\n\n" +
 "    private String consumerKey = null;\n" +
 "    private String consumerSecret = null;\n" +
 "    private String requestTokenURL = null;\n" +

@@ -34,7 +34,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.OAuthProviderListener;
 
-class SMArtClient {
+public class SMArtClient {
 
     private String consumerKey = null;
     private String consumerSecret = null;
