@@ -29,6 +29,18 @@
   </repositories>
   <build>
     <plugins>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-source-plugin</artifactId>
+	<executions>
+	  <execution>
+	    <phase>package</phase>
+	    <goals>
+	      <goal>jar</goal>
+	      </goals>
+	    </execution>
+	  </executions>
+	</plugin>
     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -38,7 +50,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.gorkwobble.logmanager.LogManager</mainClass>
+              <mainClass>org.smartplatforms.client.SMArtClient</mainClass>
             </manifest>
           </archive>
         </configuration>

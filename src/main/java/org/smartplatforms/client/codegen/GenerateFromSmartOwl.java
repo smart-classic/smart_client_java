@@ -65,6 +65,7 @@ public class GenerateFromSmartOwl {
 "import java.util.HashMap;\n" +
 "import java.util.List;\n" +
 "import java.util.ArrayList;\n" +
+"import javax.servlet.http.HttpServletRequest;\n" +
 "import org.apache.http.client.methods.HttpUriRequest;\n\n" +
 "import org.apache.http.impl.client.DefaultHttpClient;\n" +
 "import org.apache.http.impl.client.AbstractHttpClient;\n" +
@@ -121,12 +122,12 @@ public class GenerateFromSmartOwl {
 "        smartUtils = new Utils(consumerKey, consumerSecret, baseURL,\n" +
 "                new DefaultResponseTypeConversion(), httpTimeout);\n" +
 "    }\n"+
-"    public void setAccessToken(HttpServletRequest r){"+
-"    	this.smartUtils.setAccessToken(r);"+
-"    }"+
-"    "+
-"    public void setAccessToken(String token, String secret){"+
-"    	this.smartUtils.setAccessToken(token, secret);"+
+"    public void setAccessToken(HttpServletRequest r){\n"+
+"    	this.smartUtils.setAccessToken(r);\n"+
+"    }\n"+
+"    \n"+
+"    public void setAccessToken(String token, String secret){\n"+
+"    	this.smartUtils.setAccessToken(token, secret);\n"+
 "    }\n";
 
 
@@ -155,8 +156,7 @@ public class GenerateFromSmartOwl {
 "            additionalParams.add(new String[] { \"offline\", \"true\" } );\n" +
 "            additionalParams.add(new String[] { \"record_id\", recordId /*\"2000000008\"*/ } );\n" +
 "            oprov.setListener(new OAuthProviderListenerForSMArt(additionalParams));\n" +
-"            urlWithRequestToken = oprov.retrieveRequestTokenAdditionalParameters(\n" +
-"                    oauthConsumer, oauthCallback, \"offline\", \"true\", \"record_id\", recordId);\n" +
+"            urlWithRequestToken =  oprov.retrieveRequestToken(oauthConsumer, oauthCallback);// TODO FIXME oprov.retrieveRequestTokenAdditionalParameters( oauthConsumer, oauthCallback, \"offline\", \"true\", \"record_id\", recordId);\n" +
 "            System.out.println(\"consumer token/secret: \" + oauthConsumer.getToken() + '/' + oauthConsumer.getTokenSecret());\n" +
 "            tokenSecret = new String[] {\n" +
 "                oauthConsumer.getToken() , oauthConsumer.getTokenSecret(), urlWithRequestToken\n" +

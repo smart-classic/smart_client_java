@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -72,7 +73,6 @@ class SMArtClient {
         smartUtils = new Utils(consumerKey, consumerSecret, baseURL,
                 new DefaultResponseTypeConversion(), httpTimeout);
     }
-
     public void setAccessToken(HttpServletRequest r){
     	this.smartUtils.setAccessToken(r);
     }
@@ -80,8 +80,6 @@ class SMArtClient {
     public void setAccessToken(String token, String secret){
     	this.smartUtils.setAccessToken(token, secret);
     }
-
-
     /** Get a single allergy -- records/{record_id}/allergies/{allergy_id}
     * @param recordId server's record ID
     * @param allergyId server's internal ID for this allergy document
@@ -966,8 +964,7 @@ class SMArtClient {
             additionalParams.add(new String[] { "offline", "true" } );
             additionalParams.add(new String[] { "record_id", recordId /*"2000000008"*/ } );
             oprov.setListener(new OAuthProviderListenerForSMArt(additionalParams));
-            urlWithRequestToken = oprov.retrieveRequestTokenAdditionalParameters(
-                    oauthConsumer, oauthCallback, "offline", "true", "record_id", recordId);
+            urlWithRequestToken =  oprov.retrieveRequestToken(oauthConsumer, oauthCallback);// TODO FIXME oprov.retrieveRequestTokenAdditionalParameters( oauthConsumer, oauthCallback, "offline", "true", "record_id", recordId);
             System.out.println("consumer token/secret: " + oauthConsumer.getToken() + '/' + oauthConsumer.getTokenSecret());
             tokenSecret = new String[] {
                 oauthConsumer.getToken() , oauthConsumer.getTokenSecret(), urlWithRequestToken
