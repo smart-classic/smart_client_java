@@ -75,6 +75,10 @@ public class Utils {
         
         defaultConsumerKey = consumerKey;
         defaultConsumerSecret = consumerSecret;
+
+        logger.info(" -- init with ckey: " + defaultConsumerKey);
+        logger.info(" -- init with csecret: " + defaultConsumerSecret);
+
         defaultBaseURL = baseURL;
         if (defaultBaseURL.charAt(defaultBaseURL.length() -1) != '/') {
             defaultBaseURL += "/";
@@ -93,6 +97,35 @@ public class Utils {
         }
 
     }
+
+	public static String getCookieValue(Cookie[] cookies, String cookieName,
+			String defaultValue) {
+		for (int i = 0; i < cookies.length; i++) {
+			Cookie cookie = cookies[i];
+			if (cookieName.equals(cookie.getName()))
+				return (cookie.getValue());
+		}
+		return (defaultValue);
+	}
+
+    void setAccessToken(HttpServletRequest request) {
+
+		String cn = request.getParameter("cookie_name");
+		String c = getCookieValue(request.getCookies(), cn, null);
+		try {
+			c = java.net.URLDecoder.decode(c, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		c = c.split("Authorization: ")[1];
+		HttpParameters p = OAuth.oauthHeaderToParamsMap(c);
+		String accessToken = p.getFirst("smart_oauth_token");
+		String secret = p.getFirst("smart_oauth_token_secret");
+		setAccessToken(accessToken, secret);
+    }
+
 
     String dataFromStream(InputStream inputStrm) throws SMArtClientException {
         String xstr = null;
@@ -123,37 +156,6 @@ public class Utils {
         }
 
         return xstr;
-    }
-
-	public static String getCookieValue(Cookie[] cookies, String cookieName,
-			String defaultValue) {
-		for (int i = 0; i < cookies.length; i++) {
-			Cookie cookie = cookies[i];
-			if (cookieName.equals(cookie.getName()))
-				return (cookie.getValue());
-		}
-		return (defaultValue);
-	}
-
-    void setAccessToken(HttpServletRequest request) {
-
-		String cn = request.getParameter("cookie_name");
-		String c = getCookieValue(request.getCookies(), cn, null);
-		try {
-			c = java.net.URLDecoder.decode(c, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		c = c.split("Authorization: ")[1];
-		HttpParameters p = OAuth.oauthHeaderToParamsMap(c);
-		String accessToken = p.getFirst("smart_oauth_token");
-		String secret = p.getFirst("smart_oauth_token_secret");
-		
-		this.accessToken = accessToken;
-		this.accessSecret = secret;
-  
     }
 
     void setAccessToken(String accessToken, String secret) {
@@ -361,7 +363,6 @@ public class Utils {
             consumerSecret = indivoInstallation0[2];
         }
 
-        logger.info("consumerToken, consumerSecret, foreignURL: " + consumerToken + ", " + consumerSecret + ", " + foreignURL);
         String displayQS = "null";
         if (queryString != null) {
             displayQS = queryString.getClass().getName() + " " + queryString;
@@ -432,8 +433,11 @@ public class Utils {
         }
 
 
+        logger.info("consumerToken, consumerSecret, foreignURL: " + consumerToken + ", " + consumerSecret + ", " + foreignURL);
 
         logger.info(" -- baseURL0: " + baseURL0 + " -- reletivePath: " + reletivePath + " -- queryString: " + queryString0);
+        logger.info(" -- signing with ckey: " + consumerKey0);
+        logger.info(" -- signing with csecret: " + consumerSecret0);
 
         String phaURLString = baseURL0 + reletivePath;
         if (queryString0.length() > 0) { phaURLString += "?" + queryString0; }

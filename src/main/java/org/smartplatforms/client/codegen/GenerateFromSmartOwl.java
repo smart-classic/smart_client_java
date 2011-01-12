@@ -39,7 +39,6 @@ import org.openrdf.query.TupleQueryResultHandler;
 import org.openrdf.query.resultio.TupleQueryResultWriter;
 //import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
-import org.openrdf.rio.turtle.TurtleWriter;
 import org.openrdf.rio.RDFFormat;
 
 import org.smartplatforms.client.codegen.GenClientUtils;
@@ -359,9 +358,6 @@ public class GenerateFromSmartOwl {
     }
 
     private void dowork0(OutputStream fos) throws org.openrdf.OpenRDFException, IOException {
-//        TurtleWriter turtleWriter = new TurtleWriter(System.out);
-//        SPARQLResultsXMLWriter sparqlWriter = new SPARQLResultsXMLWriter(System.out);
-        //SPARQLResultsXMLWriter
 
         Sail memstore = new MemoryStore();
         Repository myRepository = new SailRepository(memstore);

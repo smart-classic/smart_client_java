@@ -1,19 +1,16 @@
 To get started with the SMArt API Java client library:
-  git clone git@github.com:chb/smart_client_java.git
-  mvn install
-  mvn javadoc:javadoc
 
-This will create:  
+  git clone git@github.com:chb/smart_client_java.git
+  mvn dependency:copy-dependencies install
+
+This will create many jar files in target/, including:
   target/SMArt_client-0.1.jar
 
 ---
 
 To try out the test application for the SMArt API Java client library,
 first run the commands above, then:
-  cd test
-  mvn install
 
-This will create 
-  target/SMArt_client_test_servlet.war
+  cp target/*.jar test/smartapp/web/WEB-INF/lib
 
-To deploy and run the test servelet, see test/README.
+Then follow instructions in test/smartapp/README
