@@ -13,4 +13,4 @@ first run the commands above, then:
 
   cp target/*.jar test/smartapp/web/WEB-INF/lib
 
-Then follow instructions in test/smartapp/README
+Then follow instructions in test/README
