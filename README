@@ -3,7 +3,10 @@ ant 1.7.0 or newer must be installed on your machine
 git must be installed on your machine
 
 git clone git@github.com:chb/smart_client_java.git
+cd bin
 ./build.sh
+
+cd ..
 
 creates:
     src/org/smartplatforms/client/SMArtClient.java
