@@ -4,6 +4,36 @@
 
     <property name="version" value="0.2"/>
 
+      <condition property="via_http">
+	<matches string="${ontology_location}" pattern="^http"/>
+      </condition>
+
+    <target name="fetch_ontology" if="via_http">
+      <echo  message="Loading ontology from: ${ontology_location}" />
+
+
+      <loadresource property="ontology" failonerror="false" quiet="true">
+	<url url="${ontology_location}" />
+      </loadresource>
+
+      <loadresource property="ontology" failonerror="false">
+	<file file="${ontology_location}" />
+      </loadresource>
+
+      <echo file="smart.owl" append="false" message="${ontology}" />
+    </target>
+
+    <target name="copy_ontology" unless="via_http">
+      <echo  message="Loading ontology from: ${ontology_location}" />
+
+      <loadresource property="ontology" failonerror="false">
+	<file file="${ontology_location}" />
+      </loadresource>
+
+      <echo file="smart.owl" append="false" message="${ontology}" />
+    </target>
+
+
 
     <target name="make_build_dir">
        <mkdir dir="../build/classes"/>
@@ -27,7 +57,7 @@
         <ivy:retrieve conf="codegen"  pattern="../lib-codegen/[artifact].[ext]" />
     </target>
 
-    <target name="build-codegen" depends="make_build_dir,-retrieve-for-codegen" >
+    <target name="build-codegen" depends="make_build_dir,-retrieve-for-codegen,copy_ontology,fetch_ontology" >
         <javac destdir="../build/classes" srcdir="../src" includes="**/client/codegen/*.java"
                                                      excludes="**/client/codegen/StartClient.java,**/client/codegen/EndClient.java"
                                                    target="1.5" debug="true" debuglevel="lines,vars,source">

@@ -1,0 +1,12 @@
+lib/*.jar
+build
+lib
+src/org/smartplatforms/client/SMArtClient.java
+lib-codegen
+bin/EndClient.java
+bin/startClient.java
+bin/WEB-INF
+bin/generatedSource.vsl
+javadoc
+bin/StartClient.java
+bin/smart.owl
