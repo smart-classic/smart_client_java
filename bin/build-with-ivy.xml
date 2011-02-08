@@ -107,6 +107,9 @@
               <exclude name="org/smartplatforms/client/codegen/*.java" />
               <exclude name="org/smartplatforms/client/tests/*.java" />
           </fileset>
+          <classpath>
+              <fileset dir="../lib-codegen" includes="**.jar" />
+          </classpath>
        </javadoc>
     </target>
 

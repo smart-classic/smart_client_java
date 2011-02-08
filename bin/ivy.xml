@@ -21,7 +21,7 @@
     <dependencies defaultconf="default->default" >
         <dependency org="org.apache.velocity" name="velocity" rev="1.5" conf="codegen->default" />
         <dependency org="javax.servlet" name="servlet-api" rev="2.5" conf="codegen->default" />
-        <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1"  conf="codegen->default" />
+        <!-- dependency org="commons-httpclient" name="commons-httpclient" rev="3.1"  conf="codegen->default" / -->
         <dependency org="javax" name="javaee-web-api" rev="6.0" conf="codegen->default" />
         <dependency org="org.openrdf.sesame" name="sesame-queryresultio-api" rev="2.3.2"  conf="codegen->default" />
         <dependency org="org.openrdf.sesame" name="sesame-queryresultio-sparqlxml" rev="2.3.2"  conf="codegen->default" />
