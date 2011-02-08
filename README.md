@@ -3,25 +3,25 @@ Nate Finstein, Children's Hospital Informatics Program
 
 ## Obtaining the code, building a sample app
 
-0.  To get started with the SMArt Java Client Library, you'll need
+To get started with the SMArt Java Client Library, you'll need
 
- * git
- * java
- * ant >= 1.7.0
+    git
+    java
+    ant >= 1.7.0
 
-1.  Obtain the code, build the client library from the SMArt ontology,
+Obtain the code, build the client library from the SMArt ontology,
 and automatically build a sample servlet:
 
     git clone https://github.com/chb/smart_client_java.git
     cd smart_client_java/bin
     sh ./build.sh
 
-2.  If all goes according to plan, you should be able to run the
+If all goes according to plan, you should be able to run the
 `RxReminder` sample servlet now:
 
- * Copy `build/smartapp.war` to `<tomcat-directory>/webapps`
- * Start up tomcat (on port 8000)
- * Follow instructions at http://dev.smartplatforms.org
+  1. Copy `build/smartapp.war` to `<tomcat-directory>/webapps`
+  2. Start up tomcat (on port 8000)
+  3. Follow instructions at http://dev.smartplatforms.org
 
 ---
 ## Building your own app
