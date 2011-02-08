@@ -177,7 +177,7 @@ public class Reminder extends HttpServlet {
 
                     XMLGregorianCalendar xgreg = dtf.newXMLGregorianCalendar(pillWhen);
                     GregorianCalendar greg = xgreg.toGregorianCalendar();
-                    greg.add(GregorianCalendar.DAY_OF_YEAR, new Integer(pillQuant));
+                    greg.add(GregorianCalendar.DAY_OF_YEAR, new Float(pillQuant).intValue());
 
                     GregorianCalendar priorWhen = pillDates.get("pillName");
                     if (priorWhen == null || priorWhen.before(greg)) {
