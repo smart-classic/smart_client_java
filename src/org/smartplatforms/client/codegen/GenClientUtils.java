@@ -19,7 +19,7 @@ public class GenClientUtils {
     public static final int STATE_VARIABLE = 2;
     public static final int STATE_END = 99999;
 
-    private Map<String,String> javaDocTable = null;
+    public Map<String,String> javaDocTable = null;
 
     public GenClientUtils() {
         javaDocTable = new HashMap<String,String>();
@@ -32,6 +32,8 @@ public class GenClientUtils {
         javaDocTable.put("noteId", "server's internal ID for this note document");
         javaDocTable.put("problemId", "server's internal ID for this problem document");
         javaDocTable.put("userId", "server's internal ID for this user");
+        javaDocTable.put("labResultId", "server's internal ID for this lab result");
+        javaDocTable.put("labResultPanelId", "server's internal ID for this lab result panel");
     }
 
 

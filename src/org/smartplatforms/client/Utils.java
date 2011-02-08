@@ -65,8 +65,8 @@ public class Utils {
     private int defaultHttpTimeout = 7000;
     private ResponseTypeConversion defaultResponseTypeConversion = null;
 
-    private String accessToken = null;
-    private String accessSecret = null;
+//    private String accessToken = null;
+//    private String accessSecret = null;
     
     public Utils(String consumerKey, String consumerSecret, String baseURL,
             ResponseTypeConversion responseTypeConversion, Integer httpTimeout)
@@ -80,8 +80,8 @@ public class Utils {
         logger.info(" -- init with csecret: " + defaultConsumerSecret);
 
         defaultBaseURL = baseURL;
-        if (defaultBaseURL.charAt(defaultBaseURL.length() -1) != '/') {
-            defaultBaseURL += "/";
+        if (defaultBaseURL.charAt(defaultBaseURL.length() -1) == '/') {
+            defaultBaseURL = defaultBaseURL.substring(0, defaultBaseURL.length() -1);
         }
         defaultResponseTypeConversion = responseTypeConversion;
         if (httpTimeout != null) {
@@ -98,7 +98,8 @@ public class Utils {
 
     }
 
-	public static String getCookieValue(Cookie[] cookies, String cookieName,
+/*
+    public static String getCookieValue(Cookie[] cookies, String cookieName,
 			String defaultValue) {
 		for (int i = 0; i < cookies.length; i++) {
 			Cookie cookie = cookies[i];
@@ -126,6 +127,14 @@ public class Utils {
 		setAccessToken(accessToken, secret);
     }
 
+    void setAccessToken(String accessToken, String secret) {
+
+		this.accessToken = accessToken;
+		this.accessSecret = secret;
+
+    }
+
+*/
 
     String dataFromStream(InputStream inputStrm) throws SMArtClientException {
         String xstr = null;
@@ -156,13 +165,6 @@ public class Utils {
         }
 
         return xstr;
-    }
-
-    void setAccessToken(String accessToken, String secret) {
-
-		this.accessToken = accessToken;
-		this.accessSecret = secret;
-  
     }
 
     void signWithSignpost(
@@ -226,8 +228,7 @@ public class Utils {
             String reqMeth,
             String reletivePath,
             Object queryString,
-            String phaToken,
-            String phaTokenSecret,
+            TokenSecret accessTokenAndSecret,
             Object requestBody,   // String or byte[]
             String requestContentType,
             Object responseContentType,
@@ -241,8 +242,14 @@ public class Utils {
         
         if (options == null) { options = new HashMap<String,Object>(); }
 
+        String aToken = null;
+        String aSecret = null;
+        if (accessTokenAndSecret != null) {
+            aToken = accessTokenAndSecret.getToken();
+            aSecret = accessTokenAndSecret.getTokenSecret();
+        }
         HttpResponse response = phaRequestPart1(
-            reqMeth, reletivePath, queryString, this.accessToken, this.accessSecret, requestBody, requestContentType, options);
+            reqMeth, reletivePath, queryString, aToken, aSecret, requestBody, requestContentType, options);
 
         return smartRequestResponse(response, responseContentType, reqMeth + " " + reletivePath, options);
     }
@@ -435,10 +442,6 @@ public class Utils {
 
         logger.info("consumerToken, consumerSecret, foreignURL: " + consumerToken + ", " + consumerSecret + ", " + foreignURL);
 
-        logger.info(" -- baseURL0: " + baseURL0 + " -- reletivePath: " + reletivePath + " -- queryString: " + queryString0);
-        logger.info(" -- signing with ckey: " + consumerKey0);
-        logger.info(" -- signing with csecret: " + consumerSecret0);
-
         String phaURLString = baseURL0 + reletivePath;
         if (queryString0.length() > 0) { phaURLString += "?" + queryString0; }
 
@@ -511,8 +514,10 @@ public class Utils {
 
         // in case of form-url-encoded, will signpost know to look at Content-Type header and entity??
         signWithSignpost(hcRequest, consumerKey0, consumerSecret0, phaToken, phaTokenSecret);
+        logger.info("about to sign  -- consumerKey, consumerSecret, phaToken, phaTokenSecret: " +
+                consumerKey0 + ", " + consumerSecret0 + ", " + phaToken + ", " + phaTokenSecret);
 
-        hcRequest.addHeader("Accept", "text/plain,application/xml");      // don't be mistaken for a browser
+        // FIXME, is this good?/**/hcRequest.addHeader("Accept", "text/plain,application/xml");      // don't be mistaken for a browser
         HttpResponse httpResponse = smartExecute(hcRequest, options);
         return httpResponse;
     }
@@ -547,10 +552,39 @@ public class Utils {
         try {
             org.apache.http.Header[] allheaders = hcRequest.getAllHeaders();
             StringBuffer allheadersSB = new StringBuffer("\nall request headers:");
+            String authHeadVal = null;
             for (int ii = 0; ii < allheaders.length; ii++) {
                 allheadersSB.append("\n" + allheaders[ii].getName() + " : " + allheaders[ii].getValue());
+                if (allheaders[ii].getName().equals("Authorization")) {
+                    authHeadVal = allheaders[ii].getValue();
+                    logger.info("realm??? " + authHeadVal);
+                }
             }
             logger.info("request: " + hcRequest.getMethod() + " " + hcRequest.getURI() + allheadersSB);
+            if (authHeadVal.toUpperCase().startsWith("OAUTH")
+                    && (! authHeadVal.toUpperCase().contains("REALM=\""))) {
+                authHeadVal = "OAuth " + "realm=\"\", " + authHeadVal.substring(6).trim();
+                hcRequest.setHeader("Authorization", authHeadVal);
+
+                allheaders = hcRequest.getAllHeaders();
+                allheadersSB = new StringBuffer("\nALL REQUEST HEADERS:");
+                for (int ii = 0; ii < allheaders.length; ii++) {
+                    allheadersSB.append("\n" + allheaders[ii].getName() + " : " + allheaders[ii].getValue());
+                }
+                logger.info("realm!!! " + allheadersSB);
+            }
+
+
+            System.out.println("hcRequest:");
+            System.out.println("  getMethod(): " + hcRequest.getMethod());
+            System.out.println("  getProcolVersion(): " + hcRequest.getProtocolVersion());
+            org.apache.http.RequestLine testRL = hcRequest.getRequestLine();
+            System.out.println("  getRequestLine(): " + testRL.getMethod() + "   " + testRL.getUri() + "   " + testRL.getProtocolVersion());
+            System.out.println("  getUri(): " + hcRequest.getURI());
+
+
+
+
             httpResponse = httpClient.execute(hcRequest);
         } catch (IOException ioe) {
             logger.warn("connectionTimeout, socketTimeout: " + connectionTimeout + ", " + socketTimeout);

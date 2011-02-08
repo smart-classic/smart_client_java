@@ -95,6 +95,15 @@ public class StartClient {  /* NOT PART OF GENERATED CLIENT */
         smartUtils = new Utils(consumerKey, consumerSecret, baseURL,
                 new DefaultResponseTypeConversion(), httpTimeout);
     }
+
+    /**
+     * Not typically used, but a few apps might have a reason to directly access Utils.
+     *
+     * @return Utils instance used by this StartClient instance
+     */
+    public Utils getUtils() {
+        return smartUtils;
+    }
 //#end
     // END OF StartClient.java
 //#if (1 == 2)  ## exclude following line from output
