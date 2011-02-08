@@ -1,9 +1,0 @@
-This is a simple SMArt REST app using the java library. 
-
-0.  Follow instructions in smart_client_java/README to build jars and
-copy them to smartapp/web/WEB-INF/lib
-
-1.  $ cd smarrtapp
-2.  $ ant
-3.  $ cp smartapp.war {path/to/your/servlet/container}
-

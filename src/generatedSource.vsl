@@ -1,0 +1,108 @@
+## Velocity Template.
+
+
+## for challenge, no PUT, POST or DELETE
+#if( ($method != "PUT" && $method != "POST" && $method != "DELETE") || !$challenge )
+#set($pathLengthM1 = $path.length() - 1)
+
+## first put out javadoc ====================================================
+    /** $description -- $path
+#foreach($token in $tokenList)
+#if($token.charAt(0) == "{")
+    #set($tokenUnbracked = $generateFromSmartOwl.tokenUnbracked($token))
+    * @param $tokenUnbracked $javadocTable.get($tokenUnbracked)
+#end
+#end
+##
+#foreach($queryKey in $queryMap.keySet())
+   #set($queryVal = $queryMap.get($queryKey))
+    * @param $queryKey $queryVal
+#end
+#if($category != "container_items" && $category != "container_item")
+    * @param accessTokenAndSecret OAuth access token and token_secret.  new TokenSecret(String token, String secret) or new TokenSecret(HttpServletRequst req)
+#end
+#if($method == "PUT" || $method == "POST")
+    * @param requestBody data to send as request body
+#end
+    * @param options see class javadoc
+    */##
+
+## now put out method signature =============================================
+## method name ---------------------------------
+#set($lastIsVar = $booleanFalse)
+    public Object ##
+#foreach($token in $tokenList)##
+#if($velocityCount > 1)_#end##
+#if($token.charAt(0) == "{")X#set($lastIsVar = $booleanTrue)##
+#{else}${token}#set($lastIsVar = $booleanFalse)##
+#end##
+#{end}
+##
+#if($path.charAt($pathLengthM1) == "/")_#end
+#if($lastIsVar)_#{end}##
+$method(
+            ## now for the method parameters ------------
+#set($firstParam = $booleanTrue)
+#foreach($token in $tokenList)
+#if($token.charAt(0) == "{")
+#set($tokenUnbracked = $generateFromSmartOwl.tokenUnbracked($token))
+#if(!$firstParam), #end##
+#set($firstParam = $booleanFalse)String $tokenUnbracked##
+#end
+#end
+##
+#foreach($queryKey in $queryMap.keySet())##
+#if(!$firstParam), #end
+#set($firstParam = $booleanFalse)String $queryKey##
+#end
+##
+#if($category != "container_items" && $category != "container_item")##
+#if(!$firstParam), #end
+#set($firstParam = $booleanFalse)TokenSecret accessTokenAndSecret##
+#end
+##
+#if($method == "PUT" || $method == "POST")##
+#if(!$firstParam), #end
+#set($firstParam = $booleanFalse)String requestBody##
+#end
+##
+#if(!$firstParam), #end
+#set($firstParam = $booleanFalse)Map<String,Object> options)
+            throws org.smartplatforms.client.SMArtClientException {
+##
+## now, build the URL ============================================================
+        String restURL = ##
+#set($state = "START")
+#foreach($token in $tokenList)
+##
+#if($token.charAt(0) == "{")
+#set($tokenUnbracked = $generateFromSmartOwl.tokenUnbracked($token))
+#if($state == "START")$tokenUnbracked#end##
+#if($state == "CONSTANT")/" + $tokenUnbracked#end##
+#if($state == "VARIABLE") + "/" + $tokenUnbracked#end##
+#set($state = "VARIABLE")
+##
+#else## + "/$token##
+#if($state == "START")"/$token#end##
+#if($state == "CONSTANT")/$token#end##
+#if($state == "VARIABLE") + "/$token#end##
+#set($state = "CONSTANT")
+#end
+##
+#end
+##
+#if($path.charAt($pathLengthM1) == "/")##
+#if($state == "CONSTANT")/#end##
+#if($state == "VARIABLE") + "/"#end##
+#end
+#if($state == "CONSTANT")"#end##
+#if($state == "VARIABLE")#end##
+;
+        return smartUtils.smartRequest("$method", restURL, null, ##
+#if($category != "container_items" && $category != "container_item")accessTokenAndSecret, ##
+#{else}null, #end##
+#if($method == "PUT" || $method == "POST")requestBody, ##
+#{else}null, #end##
+null, null, options);
+    }
+#end  ## if for challenge, no PUT, POST or DELETE

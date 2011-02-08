@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="SMArt_client_IVY" default="build-test" basedir="."  xmlns:ivy="antlib:org.apache.ivy.ant">
+    <description>Builds, using IVY to resolve dependencies.</description>
+
+    <property name="version" value="0.2"/>
+
+
+    <target name="make_build_dir">
+       <mkdir dir="../build/classes"/>
+    </target>
+    <target name="-check-velocity-smartowl-ages">
+       <condition property="velocity-and-smartowl-older">
+          <and>
+              <uptodate srcfile="../src/generatedSource.vsl" targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
+              <uptodate srcfile="${smart_owl_path}" targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
+          </and>
+       </condition>
+    </target>
+
+    <target name="-retrieve-for-codegen">
+        <ivy:settings file="SMArt-ivysettings.xml" />
+        <ivy:retrieve conf="codegen"  pattern="../lib-codegen/[artifact].[ext]" />
+    </target>
+
+    <target name="build-codegen" depends="make_build_dir,-retrieve-for-codegen" >
+        <javac destdir="../build/classes" srcdir="../src" includes="**/client/codegen/*.java"
+                                                     excludes="**/client/codegen/StartClient.java,**/client/codegen/EndClient.java"
+                                                   target="1.5" debug="true" debuglevel="lines,vars,source">
+            <classpath>
+                <fileset dir="../lib-codegen" includes="**.jar" />
+            </classpath>
+        </javac>
+        <condition property="smart_owl_path-absent">
+          <not> <available file="${smart_owl_path}" /> </not>
+        </condition>
+    </target>
+
+    <!-- ========================================================== -->
+    <target name="-check-delete-SMArtClient-0" >
+        <condition property="SMArtClient-present">
+            <and>
+            <available file="../src/org/smartplatforms/client/SMArtClient.java"/>
+            <not><isset property="velocity-and-smartowl-older" /></not>
+            </and>
+        </condition>
+    </target>
+    <target name="-check-delete-SMArtClient-1" depends="-check-velocity-smartowl-ages,-check-delete-SMArtClient-0" if="SMArtClient-present">
+       <input
+           message="May ant overwrite ../src/org/smartplatforms/client/SMArtClient.java with the newly created SMArtClient.java? "
+           validargs="Y,n" 
+           addproperty="SMArtClient-deletable" />
+       <condition property="SMArtClient-protect">
+         <not> <equals arg1="${SMArtClient-deletable}" arg2="Y" trim="true" /> </not>
+       </condition>
+       <fail if="SMArtClient-protect"  message="stopping because you did not permit overwrite" />
+    </target>
+    <!-- ========================================================== -->
+
+    <target name="-check-smart-owl-presence" if="smart_owl_path-absent" >
+         <echo message="${smart_owl_path} not found" />
+         <fail  message="stopping because smart.owl file not found, use -Dsmart_owl_path=&lt;path-to-smart.owl&gt; when running this ant project" />
+    </target>
+    <target name="run-codegen" 
+               depends="build-codegen,-retrieve-for-codegen,-check-smart-owl-presence,-check-delete-SMArtClient-1,-check-velocity-smartowl-ages"
+                                                                                                   unless="velocity-and-smartowl-older">
+        <!-- java>
+           <classpath>
+               <pathelement path="../build/classes"/>
+               <fileset dir="../lib" includes="**.jar" />
+           </classpath>
+           <arg value="${smart_owl_path}" />
+       </java -->
+       <echo>source newer (either vsl or owl), running codegen</echo>
+       <copy file="../src/org/smartplatforms/client/codegen/StartClient.java" todir="./" />
+       <copy file="../src/org/smartplatforms/client/codegen/EndClient.java" todir="./" />
+       <copy file="../src/generatedSource.vsl" todir="./" />
+       <exec executable="java">
+            <!-- exec instead of java task because somehow java task w/ ant 1.7 causes a clash with a .jar in the ant lib -->
+            <arg value="-cp"/>
+            <arg value="../build/classes:../lib-codegen/*"/>
+            <arg value="org.smartplatforms.client.codegen.GenerateFromSmartOwl"/>
+            <arg value="${smart_owl_path}" />
+       </exec>
+       <copy file="../build/SMArtClient.java" todir="../src/org/smartplatforms/client" />
+    </target>
+
+
+    <target name="compile" depends="run-codegen,make_build_dir">
+        <ivy:settings file="SMArt-ivysettings.xml" />
+        <ivy:retrieve conf="run"  pattern="../lib/[artifact].[ext]" />
+
+        <javac destdir="../build/classes" srcdir="../src" includes="**/client/tests/*.java,**/client/*.java"
+                                                   target="1.5" debug="true" debuglevel="lines,vars,source">
+            <classpath>
+                <fileset dir="../lib-codegen" includes="**.jar" />
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="-javadoc-test">
+        <uptodate property="javadoc-uptodate" srcfile="../src/org/smartplatforms/client/SMArtClient.java" targetfile="../javadoc/index.html" />
+    </target>
+    <target name="javadoc" depends="-javadoc-test" unless="javadoc-uptodate">
+       <javadoc destdir="../javadoc" access="package" use="true" failonerror="true" >
+          <fileset dir="../src">
+              <include name="**/*.java" />
+              <exclude name="org/smartplatforms/client/codegen/*.java" />
+              <exclude name="org/smartplatforms/client/tests/*.java" />
+          </fileset>
+       </javadoc>
+    </target>
+
+
+    <target name="build" depends="compile, javadoc">
+        <jar destfile="../build/SMArtClient-${version}.jar" duplicate="fail" strict="fail">
+            <fileset dir="../build/classes">
+              <exclude name="../build/classes/org/smartplatforms/client/codegen/**" />
+              <exclude name="../build/classes/org/smartplatforms/client/tests/**" />
+            </fileset>
+            <manifest>
+              <attribute name="Implementation-Vendor" value="SMArt"/>
+              <attribute name="Implementation-Title" value="Java client"/>
+              <attribute name="Implementation-Version" value="${version}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="build-test" depends="build">
+        <delete quiet="true"><fileset dir="WEB-INF/lib" /><fileset dir="WEB-INF/classes" /></delete>
+        <mkdir dir="WEB-INF/lib" /><mkdir dir="WEB-INF/classes" />
+        <copy file="../src/web.xml" todir="WEB-INF" />
+        <copy file="../src/log4j.xml" todir="WEB-INF/classes" />
+        <copy todir="WEB-INF/lib">
+           <fileset dir="../lib" includes="*.jar" excludes="*-javadoc.jar,*-sources.jar,servlet-api-2.3.jar" />
+           <fileset file="../build/SMArtClient-${version}.jar" />
+        </copy>
+        <copy todir="WEB-INF/classes" >
+           <fileset dir="../build/classes" includes="org/smartplatforms/client/tests/*.class" />
+        </copy>
+        <jar destfile="../build/smartapp.war" duplicate="fail" strict="fail">
+           <fileset dir="." includes="WEB-INF/**" />
+           <manifest>
+              <attribute name="Implementation-Vendor" value="SMArt"/>
+              <attribute name="Implementation-Title" value="Java client"/>
+              <attribute name="Implementation-Version" value="${version}"/>
+           </manifest>
+        </jar>
+    </target>
+
+</project>

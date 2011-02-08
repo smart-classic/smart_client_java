@@ -1,16 +1,18 @@
-To get started with the SMArt API Java client library:
+java must be installed on your machine
+ant 1.7.0 or newer must be installed on your machine
+git must be installed on your machine
 
-  git clone git@github.com:chb/smart_client_java.git
-  mvn dependency:copy-dependencies install
+git clone git@github.com:chb/smart_client_java.git
+./build.sh
 
-This will create many jar files in target/, including:
-  target/SMArt_client-0.1.jar
+creates:
+    src/org/smartplatforms/client/SMArtClient.java
+    javadoc/index.html  and etc.
+    build/SMArtClient-0.2.jar
+    build/smartapp.war
 
----
 
-To try out the test application for the SMArt API Java client library,
-first run the commands above, then:
-
-  cp target/*.jar test/smartapp/web/WEB-INF/lib
-
-Then follow instructions in test/README
+To run the perscription reminder test, cp build/smartapp.war to <tomcat-directory>/webapps
+start up tomcat
+follow instructions in
+   http://wiki.chip.org/smart-project/index.php/Developers_Documentation:_Getting_Started#Running_in_the_context_of_the_Developers.27_Sandbox
