@@ -73,8 +73,11 @@ public class GenerateFromSmartOwl {
         if (args.length == 2) {
             if (args[1].equals("challenge")) {
                 instance.isForChallenge = true;
+            } else if (args[1].equals("nochallenge")) {
+            } else if (args[1].trim().length() == 0) {
             } else {
-                throw new RuntimeException("GenerateFromSmartOwl <path_to_smart.owl> [\"challenge\"]");
+                throw new RuntimeException("GenerateFromSmartOwl <path_to_smart.owl> [\"challenge\"]\n" +
+                    "arg1 was: " + args[0] + "    arg2 was: " + args[1]);
             }
         }
         if (args.length < 1 || args.length > 2) {

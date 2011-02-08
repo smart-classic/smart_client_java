@@ -13,6 +13,11 @@
           <and>
               <uptodate srcfile="../src/generatedSource.vsl" targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
               <uptodate srcfile="${smart_owl_path}" targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
+              <uptodate srcfile="../src/org/smartplatforms/client/codegen/StartClient.java"
+                                               targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
+              <uptodate srcfile="../src/org/smartplatforms/client/codegen/EndClient.java" 
+                                               targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
+              <uptodate srcfile="build.sh" targetfile="../src/org/smartplatforms/client/SMArtClient.java" /><!-- in case challenge toggled -->
           </and>
        </condition>
     </target>
@@ -74,12 +79,13 @@
        <copy file="../src/org/smartplatforms/client/codegen/StartClient.java" todir="./" />
        <copy file="../src/org/smartplatforms/client/codegen/EndClient.java" todir="./" />
        <copy file="../src/generatedSource.vsl" todir="./" />
-       <exec executable="java">
+       <exec executable="java" failonerror="true" >
             <!-- exec instead of java task because somehow java task w/ ant 1.7 causes a clash with a .jar in the ant lib -->
             <arg value="-cp"/>
             <arg value="../build/classes:../lib-codegen/*"/>
             <arg value="org.smartplatforms.client.codegen.GenerateFromSmartOwl"/>
             <arg value="${smart_owl_path}" />
+            <arg value="${just_for_challenge}" />
        </exec>
        <copy file="../build/SMArtClient.java" todir="../src/org/smartplatforms/client" />
     </target>
