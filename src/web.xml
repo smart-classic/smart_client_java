@@ -17,18 +17,6 @@
     <servlet>
         <servlet-name>smartapp</servlet-name>
         <servlet-class>org.smartplatforms.client.tests.Reminder</servlet-class>
-        <init-param>
-            <param-name>consumerKey</param-name>
-            <param-value>developer-sandbox@apps.smartplatforms.org</param-value>
-        </init-param>
-        <init-param>
-            <param-name>consumerSecret</param-name>
-            <param-value>smartapp-secret</param-value>
-        </init-param>
-        <init-param>
-            <param-name>serverBaseURL</param-name>
-            <param-value>http://sandbox-api.smartplatforms.org</param-value>
-        </init-param>
     </servlet>
 
     <servlet-mapping>
