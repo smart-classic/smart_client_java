@@ -52,6 +52,7 @@ public class Reminder extends HttpServlet {
 
 	String reminderFooter = "</body></html>";
 
+        private ServletConfig sConfig = null;
 	private DatatypeFactory dtf = null;
 
 	private String sparqlForReminders = "PREFIX dc:<http://purl.org/dc/elements/1.1/>\n"
@@ -67,31 +68,18 @@ public class Reminder extends HttpServlet {
 			+ "          ?fill sp:dispenseQuantity ?quant.\n"
 			+ "          ?fill dc:date ?when.\n" + "   }";
 
-    private String consumerKeyInitParam = null;
-    private String consumerSecretInitParam = null;
-    private String serverBaseURLInitParam = null;
 
 	@Override
 	public void init() throws ServletException {
-        System.out.println("in init() for Reminder");
-
-        ServletConfig sConfig = getServletConfig();
-//        java.util.Enumeration<String> pEnum = sConfig.getInitParameterNames();
-//        while (pEnum.hasMoreElements()) {
-//            String penumE = pEnum.nextElement();
-//            System.out.println("ini param name: " + penumE);
-//        }
-        consumerKeyInitParam = sConfig.getInitParameter("consumerKey");
-        consumerSecretInitParam = sConfig.getInitParameter("consumerSecret");
-        serverBaseURLInitParam = sConfig.getInitParameter("serverBaseURL");
-        System.out.println("consumerKeyInitParam, consumerSecretInitParam, serverBaseURLInitParam: " +
-                consumerKeyInitParam + ", " + consumerSecretInitParam + ", " + serverBaseURLInitParam);
-
-		try {
-			dtf = DatatypeFactory.newInstance();
-		} catch (javax.xml.datatype.DatatypeConfigurationException dce) {
-			throw new ServletException(dce);
-		}
+	    System.out.println("in init() for Reminder");
+	    
+	    this.sConfig = getServletConfig();
+	    
+	    try {
+		dtf = DatatypeFactory.newInstance();
+	    } catch (javax.xml.datatype.DatatypeConfigurationException dce) {
+		throw new ServletException(dce);
+	    }
 	}
 
 	@Override
@@ -131,8 +119,9 @@ public class Reminder extends HttpServlet {
 		// Represent the list as an RDF graph
 		try {
 			SMArtClient client = new SMArtClient(
-                    consumerKeyInitParam, consumerSecretInitParam, serverBaseURLInitParam
-			);
+							     sConfig.getInitParameter("consumerKey"),
+							     sConfig.getInitParameter("consumerSecret"),
+							     sConfig.getInitParameter("serverBaseURL"));
 
 			RepositoryConnection meds = (RepositoryConnection) client
 					.records_X_medications_GET(recordId, tokenSecret, null);
