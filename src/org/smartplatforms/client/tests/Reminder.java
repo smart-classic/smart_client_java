@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletConfig;
 import org.openrdf.query.QueryLanguage;
 
 import org.openrdf.repository.RepositoryConnection;
@@ -66,9 +67,26 @@ public class Reminder extends HttpServlet {
 			+ "          ?fill sp:dispenseQuantity ?quant.\n"
 			+ "          ?fill dc:date ?when.\n" + "   }";
 
+    private String consumerKeyInitParam = null;
+    private String consumerSecretInitParam = null;
+    private String serverBaseURLInitParam = null;
+
 	@Override
 	public void init() throws ServletException {
-		System.out.println("in init() for Reminder");
+        System.out.println("in init() for Reminder");
+
+        ServletConfig sConfig = getServletConfig();
+//        java.util.Enumeration<String> pEnum = sConfig.getInitParameterNames();
+//        while (pEnum.hasMoreElements()) {
+//            String penumE = pEnum.nextElement();
+//            System.out.println("ini param name: " + penumE);
+//        }
+        consumerKeyInitParam = sConfig.getInitParameter("consumerKey");
+        consumerSecretInitParam = sConfig.getInitParameter("consumerSecret");
+        serverBaseURLInitParam = sConfig.getInitParameter("serverBaseURL");
+        System.out.println("consumerKeyInitParam, consumerSecretInitParam, serverBaseURLInitParam: " +
+                consumerKeyInitParam + ", " + consumerSecretInitParam + ", " + serverBaseURLInitParam);
+
 		try {
 			dtf = DatatypeFactory.newInstance();
 		} catch (javax.xml.datatype.DatatypeConfigurationException dce) {
@@ -113,9 +131,7 @@ public class Reminder extends HttpServlet {
 		// Represent the list as an RDF graph
 		try {
 			SMArtClient client = new SMArtClient(
-					"my-app@apps.smartplatforms.org",
-					"smartapp-secret",
-					"http://sandbox-api.smartplatforms.org"
+                    consumerKeyInitParam, consumerSecretInitParam, serverBaseURLInitParam
 			);
 
 			RepositoryConnection meds = (RepositoryConnection) client
