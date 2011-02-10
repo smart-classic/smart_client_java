@@ -11,13 +11,8 @@
     <target name="fetch_ontology" if="via_http">
       <echo  message="Loading ontology from: ${ontology_location}" />
 
-
-      <loadresource property="ontology" failonerror="false" quiet="true">
+      <loadresource property="ontology">
 	<url url="${ontology_location}" />
-      </loadresource>
-
-      <loadresource property="ontology" failonerror="false">
-	<file file="${ontology_location}" />
       </loadresource>
 
       <echo file="smart.owl" append="false" message="${ontology}" />
@@ -26,7 +21,7 @@
     <target name="copy_ontology" unless="via_http">
       <echo  message="Loading ontology from: ${ontology_location}" />
 
-      <loadresource property="ontology" failonerror="false">
+      <loadresource property="ontology">
 	<file file="${ontology_location}" />
       </loadresource>
 
