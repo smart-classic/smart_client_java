@@ -93,25 +93,18 @@
     <target name="run-codegen" 
                depends="build-codegen,-retrieve-for-codegen,-check-smart-owl-presence,-check-delete-SMArtClient-1,-check-velocity-smartowl-ages"
                                                                                                    unless="velocity-and-smartowl-older">
-        <!-- java>
-           <classpath>
-               <pathelement path="../build/classes"/>
-               <fileset dir="../lib" includes="**.jar" />
-           </classpath>
-           <arg value="${smart_owl_path}" />
-       </java -->
        <echo>source newer (either vsl or owl), running codegen</echo>
        <copy file="../src/org/smartplatforms/client/codegen/StartClient.java" todir="./" />
        <copy file="../src/org/smartplatforms/client/codegen/EndClient.java" todir="./" />
        <copy file="../src/generatedSource.vsl" todir="./" />
-       <exec executable="java" failonerror="true" >
-            <!-- exec instead of java task because somehow java task w/ ant 1.7 causes a clash with a .jar in the ant lib -->
-            <arg value="-cp"/>
-            <arg value="../build/classes:../lib-codegen/*"/>
-            <arg value="org.smartplatforms.client.codegen.GenerateFromSmartOwl"/>
-            <arg value="${smart_owl_path}" />
-            <arg value="${just_for_challenge}" />
-       </exec>
+        <java classname="org.smartplatforms.client.codegen.GenerateFromSmartOwl" fork="true">
+           <classpath>
+	        <pathelement path="../build/classes"/>
+               <fileset dir="../lib-codegen" includes="**.jar" />
+           </classpath>
+           <arg value="${smart_owl_path}" />
+       </java>
+
        <copy file="../build/SMArtClient.java" todir="../src/org/smartplatforms/client" />
     </target>
 

@@ -14,7 +14,12 @@ and automatically build a sample servlet:
 
     git clone https://github.com/chb/smart_client_java.git
     cd smart_client_java/bin
+
     sh ./build.sh
+
+    ( On windows do:             )
+    (    move build.sh build.bat )
+    (    build.bat               )
 
 If all goes according to plan, you should be able to run the
 `RxReminder` sample servlet now:
