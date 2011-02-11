@@ -2,7 +2,7 @@
 <project name="SMArt_client_IVY" default="build-test" basedir="."  xmlns:ivy="antlib:org.apache.ivy.ant">
     <description>Builds, using IVY to resolve dependencies.</description>
 
-    <property name="version" value="0.2"/>
+    <property name="version" value="0.2.1"/>
 
       <condition property="via_http">
 	<matches string="${ontology_location}" pattern="^http"/>
@@ -32,25 +32,14 @@
 
     <target name="make_build_dir">
        <mkdir dir="../build/classes"/>
-    </target>
-    <target name="-check-velocity-smartowl-ages">
-       <condition property="velocity-and-smartowl-older">
-          <and>
-              <uptodate srcfile="../src/generatedSource.vsl" targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
-              <uptodate srcfile="${smart_owl_path}" targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
-              <uptodate srcfile="../src/org/smartplatforms/client/codegen/StartClient.java"
-                                               targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
-              <uptodate srcfile="../src/org/smartplatforms/client/codegen/EndClient.java" 
-                                               targetfile="../src/org/smartplatforms/client/SMArtClient.java" /> 
-              <uptodate srcfile="build.sh" targetfile="../src/org/smartplatforms/client/SMArtClient.java" /><!-- in case challenge toggled -->
-          </and>
-       </condition>
+       <mkdir dir="../lib"/>
     </target>
 
     <target name="-retrieve-for-codegen">
         <ivy:settings file="SMArt-ivysettings.xml" />
-        <ivy:retrieve conf="codegen"  pattern="../lib-codegen/[artifact].[ext]" />
+        <ivy:retrieve conf="codegen"  pattern="../lib-codegen/[artifact]-[revision].[ext]" />
     </target>
+
 
     <target name="build-codegen" depends="make_build_dir,-retrieve-for-codegen,copy_ontology,fetch_ontology" >
         <javac destdir="../build/classes" srcdir="../src" includes="**/client/codegen/*.java"
@@ -68,13 +57,10 @@
     <!-- ========================================================== -->
     <target name="-check-delete-SMArtClient-0" >
         <condition property="SMArtClient-present">
-            <and>
             <available file="../src/org/smartplatforms/client/SMArtClient.java"/>
-            <not><isset property="velocity-and-smartowl-older" /></not>
-            </and>
         </condition>
     </target>
-    <target name="-check-delete-SMArtClient-1" depends="-check-velocity-smartowl-ages,-check-delete-SMArtClient-0" if="SMArtClient-present">
+    <target name="-check-delete-SMArtClient-1" depends="-check-delete-SMArtClient-0" if="SMArtClient-present">
        <input
            message="May ant overwrite ../src/org/smartplatforms/client/SMArtClient.java with the newly created SMArtClient.java? "
            validargs="Y,n" 
@@ -91,9 +77,7 @@
          <fail  message="stopping because smart.owl file not found, use -Dsmart_owl_path=&lt;path-to-smart.owl&gt; when running this ant project" />
     </target>
     <target name="run-codegen" 
-               depends="build-codegen,-retrieve-for-codegen,-check-smart-owl-presence,-check-delete-SMArtClient-1,-check-velocity-smartowl-ages"
-                                                                                                   unless="velocity-and-smartowl-older">
-       <echo>source newer (either vsl or owl), running codegen</echo>
+               depends="build-codegen,-retrieve-for-codegen,-check-smart-owl-presence,-check-delete-SMArtClient-1" >
        <copy file="../src/org/smartplatforms/client/codegen/StartClient.java" todir="./" />
        <copy file="../src/org/smartplatforms/client/codegen/EndClient.java" todir="./" />
        <copy file="../src/generatedSource.vsl" todir="./" />
@@ -111,7 +95,7 @@
 
     <target name="compile" depends="run-codegen,make_build_dir">
         <ivy:settings file="SMArt-ivysettings.xml" />
-        <ivy:retrieve conf="run"  pattern="../lib/[artifact].[ext]" />
+        <ivy:retrieve conf="run"  pattern="../lib/[artifact]-[revision].[ext]" />
 
         <javac destdir="../build/classes" srcdir="../src" includes="**/client/tests/*.java,**/client/*.java"
                                                    target="1.5" debug="true" debuglevel="lines,vars,source">

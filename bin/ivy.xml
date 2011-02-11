@@ -35,6 +35,7 @@
         <dependency org="info.aduna.commons" name="aduna-commons-concurrent" rev="2.6.0" conf="codegen,run->default" />
         <dependency org="info.aduna.commons" name="aduna-commons-iteration" rev="2.8.0" conf="codegen,run->default" />
         <dependency org="org.slf4j" name="slf4j-jcl" rev="1.6.1" conf="codegen,run->default" />
+        <dependency org="org.slf4j" name="slf4j-api" rev="1.6.1" conf="codegen,run->default" />
         <dependency org="org.openrdf.sesame" name="sesame-repository-sail" rev="2.3.2" conf="codegen,run->default" />
         <dependency org="org.openrdf.sesame" name="sesame-rio-api" rev="2.3.2" conf="codegen,run->default" />
         <dependency org="org.openrdf.sesame" name="sesame-query" rev="2.3.2" conf="codegen,run->default" />
@@ -49,16 +50,10 @@
         <dependency org="info.aduna.commons" name="aduna-commons-xml" rev="2.6.0" conf="codegen,run->default" />
         <dependency org="org.openrdf.sesame" name="sesame-queryparser-api" rev="2.3.2" conf="codegen,run->default" />
         <dependency org="org.openrdf.sesame" name="sesame-queryparser-sparql" rev="2.3.2" conf="codegen,run->default" />
+        <dependency org="commons-lang" name="commons-lang" rev="2.5"  conf="codegen,run->default" />
+        <dependency org="commons-logging" name="commons-logging" rev="1.1.1"  conf="codegen,run->default" />
+        <dependency org="org.openrdf.sesame" name="sesame-sail-api" rev="2.3.2"  conf="codegen,run->default" />
 
-        <!-- dependency org="org.slf4j" name="slf4j-api" rev="1.6.1" conf="codegen->default" / -->
-
-
-        <!-- dependency org="commons-lang" name="commons-lang" rev="2.5"/>
-        <dependency org="commons-logging" name="commons-logging" rev="1.1.1"/>
-        <dependency org="org.openrdf.sesame" name="sesame-sail-api" rev="2.3.2"/>
-        <dependency org="org.openrdf.sesame" name="sesame-rio-turtle" rev="2.3.2"/>
-        <dependency org="org.openrdf.sesame" name="sesame-rio-ntriples" rev="2.3.2"/>
-        <dependency org="org.openrdf.sesame" name="sesame-queryparser-serql" rev="2.3.2"/ -->
       <exclude module="ant"></exclude>
 
 </dependencies>
