@@ -29,7 +29,6 @@
                 -->
                 <url name="java" m2compatible="true">
                     <artifact pattern="http://download.java.net/maven/2/javax/[artifact]/[revision]/[artifact]-[revision].jar" />
-                    <artifact pattern="http://download.java.net/maven/1/javax.servlet/jars/[artifact]-[revision].jar" />
                 </url>
 		<ibiblio name="ibiblio" m2compatible="true"/>
            </chain>
