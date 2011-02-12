@@ -1,6 +1,10 @@
 ivy-2.2.0.jar, included in this SMArtClient distribution, is covered by the license contained in the file "LICENSE_IVY.txt"
 
-Running bin/build.sh, or otherwise running the build process of this distribution, causes other 3rd party jar files to be downloaded to your local machine.  You might re-distribute the jar files that will be installed in the lib directory as part of any application you create which makes use of SMArtClient.  It is your responsibility to ensure that you comply with the licenses covering these third party jars.
+openrdf-sesame-2.3.2-onejar.jar, included in this SMArtClient distribution, is covered by the license contained in the file "LICENSE_OPENRDF.txt"
+
+Running bin/build.sh, or otherwise running the build process of this distribution, causes other 3rd party jar files to be downloaded to your local machine.
+You might re-distribute, the jar files that will be in the lib directory, as part of any application you create which makes use of SMArtClient.
+It is your responsibility to comply with the licenses covering these third party jars.
 
 The licenses directory contains some license files related to the jars that the build process installs into the lib directory.
 "licenses/aduna-bsd.txt" relates to the aduna-commons*.jar files, and to the sesame*.jar files.

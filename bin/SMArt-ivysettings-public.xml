@@ -19,10 +19,14 @@
 <ivysettings>
 	<resolvers>
             <chain name="public" returnFirst="true">
+                <!-- Now that we are distributing openrdf-sesame-2.3.2-onejar.jar directly, ivy does not need this url resolver.
+                     This url resolver retained as a comment for convenience of any developer of a SMArt app who wishes to
+                     use ivy to distribute openrdf jars for their app.
                 <url name="sesame" m2compatible="true">
                     <artifact pattern="http://repo.aduna-software.org/maven2/releases/org/openrdf/sesame/[artifact]/[revision]/[artifact]-[revision].jar" />
                     <artifact pattern="http://repo.aduna-software.org/maven2/releases/info/aduna/commons/[artifact]/[revision]/[artifact]-[revision].jar" />
                 </url>
+                -->
                 <url name="java" m2compatible="true">
                     <artifact pattern="http://download.java.net/maven/2/javax/[artifact]/[revision]/[artifact]-[revision].jar" />
                     <artifact pattern="http://download.java.net/maven/1/javax.servlet/jars/[artifact]-[revision].jar" />

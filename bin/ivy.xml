@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-    Document   : ivy.xml
-    Created on : January 26, 2011, 12:51 PM
-    Author     : nate
-    Description:
-        Purpose of the document follows.
--->
-
 <ivy-module version="2.0">
     <info organisation="org.smartplatforms" module="client_java">
     </info>
@@ -15,7 +7,6 @@
     <configurations>
        <conf name="codegen" />
        <conf name="run" />
-       <conf name="servlet_test" />
     </configurations>
     
     <dependencies defaultconf="default->default" >
@@ -23,37 +14,12 @@
         <dependency org="javax.servlet" name="servlet-api" rev="2.5" conf="codegen->default" />
         <!-- dependency org="commons-httpclient" name="commons-httpclient" rev="3.1"  conf="codegen->default" / -->
         <dependency org="javax" name="javaee-web-api" rev="6.0" conf="codegen->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-queryresultio-api" rev="2.3.2"  conf="codegen->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-queryresultio-sparqlxml" rev="2.3.2"  conf="codegen->default" />
-
         <dependency org="oauth.signpost" name="signpost-commonshttp4" rev="1.2.1.1"  conf="codegen,run->default" />
 
-        <dependency org="org.openrdf.sesame" name="sesame-sail-api" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-repository-api" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-model" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-sail-memory" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="info.aduna.commons" name="aduna-commons-concurrent" rev="2.6.0" conf="codegen,run->default" />
-        <dependency org="info.aduna.commons" name="aduna-commons-iteration" rev="2.8.0" conf="codegen,run->default" />
         <dependency org="org.slf4j" name="slf4j-jcl" rev="1.6.1" conf="codegen,run->default" />
         <dependency org="org.slf4j" name="slf4j-api" rev="1.6.1" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-repository-sail" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-rio-api" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-query" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-sail-inferencer" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-queryalgebra-model" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-queryalgebra-evaluation" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="info.aduna.commons" name="aduna-commons-lang" rev="2.8.0" conf="codegen,run->default" />
-        <dependency org="info.aduna.commons" name="aduna-commons-io" rev="2.8.0" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-rio-rdfxml" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="info.aduna.commons" name="aduna-commons-net" rev="2.6.0" conf="codegen,run->default" />
-        <dependency org="info.aduna.commons" name="aduna-commons-text" rev="2.6.0" conf="codegen,run->default" />
-        <dependency org="info.aduna.commons" name="aduna-commons-xml" rev="2.6.0" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-queryparser-api" rev="2.3.2" conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-queryparser-sparql" rev="2.3.2" conf="codegen,run->default" />
         <dependency org="commons-lang" name="commons-lang" rev="2.5"  conf="codegen,run->default" />
         <dependency org="commons-logging" name="commons-logging" rev="1.1.1"  conf="codegen,run->default" />
-        <dependency org="org.openrdf.sesame" name="sesame-sail-api" rev="2.3.2"  conf="codegen,run->default" />
-
       <exclude module="ant"></exclude>
 
 </dependencies>
