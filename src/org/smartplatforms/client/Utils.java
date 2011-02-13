@@ -218,7 +218,7 @@ public class Utils {
     * @param reletivePath as documented at <code>http://wiki.chip.org/indivo</code>
     * @param queryString part of URL following '?', but not including '?'
     *     See <b>queryString param</b> note in the class description, above.
-    * @param tokenSecret authorized request token and secret
+    * @param accessTokenAndSecret authorized request token and secret
     * @param requestBody value to PUT or POST, not necessarily a Document
     * @param requestContentType content type may be specified, otherwise phaRequest will guess.
     * @param options possible options include: indivoInstallation; sockentTimeout; connectionTimeout

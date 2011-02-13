@@ -2,7 +2,10 @@
 <project name="SMArt_client_IVY" default="build-test" basedir="."  xmlns:ivy="antlib:org.apache.ivy.ant">
     <description>Builds, using IVY to resolve dependencies.</description>
 
-    <property name="version" value="0.2.1"/>
+
+      <condition property="version" value="0.2.1" else="0.2.1_all" >
+          <equals arg1="${just_for_challenge}" arg2="challenge" />
+      </condition>
 
       <condition property="via_http">
 	<matches string="${ontology_location}" pattern="^http"/>
@@ -87,6 +90,7 @@
                <fileset dir="../lib-codegen" includes="**.jar" />
            </classpath>
            <arg value="${smart_owl_path}" />
+           <arg value="${just_for_challenge}" />
        </java>
 
        <copy file="../build/SMArtClient.java" todir="../src/org/smartplatforms/client" />
