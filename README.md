@@ -40,12 +40,6 @@ dependencies in:
 The sample servlet is a good place to start:
     src/org/smartplatforms/client/tests/Reminder.java
 
-If you use features of openrdf beyond those used in the sample servlet,
-you might need to add some dependencies in bin/ivy.jar, then rerun
-the retrieve steps that are in bin/build-with-ivy.xml
-   <ivy:settings file="SMArt-ivysettings.xml" />
-   <ivy:retrieve conf="run"  pattern="../lib/[artifact]-[revision].[ext]" />
-
 ---
 ## Specifying a SMArt ontology file
 
