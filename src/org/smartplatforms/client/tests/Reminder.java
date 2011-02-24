@@ -1,9 +1,7 @@
 /**
  * Example SMArt REST Application: Parses OAuth tokens from
  * browser-supplied cookie, then provides a list of which prescriptions
- * will need to be refilled soon (based on dispense quantity + date, and
- * the unrealistic simplifying assumption that one pill per day is
- * consumed).
+ * will need to be refilled soon (based on dispense days supply + date)
  *
  * Josh Mandel
  * Children's Hospital Boston, 2010
@@ -65,7 +63,7 @@ public class Reminder extends HttpServlet {
 			+ "          ?med sp:drugName ?medc.\n"
 			+ "          ?medc dcterms:title ?name.\n"
 			+ "          ?med sp:fulfillment ?fill.\n"
-			+ "          ?fill sp:dispenseQuantity ?quant.\n"
+			+ "          ?fill sp:dispenseDaysSupply ?quant.\n"
 			+ "          ?fill dc:date ?when.\n" + "   }";
 
 
@@ -146,7 +144,7 @@ public class Reminder extends HttpServlet {
 					greg.add(GregorianCalendar.DAY_OF_YEAR,
 							new Float(pillQuant).intValue());
 
-					GregorianCalendar priorWhen = pillDates.get("pillName");
+					GregorianCalendar priorWhen = pillDates.get(pillName);
 					if (priorWhen == null || priorWhen.before(greg)) {
 						pillDates.put(pillName, greg);
 					}
