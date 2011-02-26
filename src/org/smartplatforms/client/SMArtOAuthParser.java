@@ -31,7 +31,6 @@ public class SMArtOAuthParser{
                 uee.printStackTrace();
         }
 
-        cv = cv.split("Authorization: ")[1];
     	this.setParams(cv);   
     }
 
