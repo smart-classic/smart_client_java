@@ -3,7 +3,7 @@
     <description>Builds, using IVY to resolve dependencies.</description>
 
 
-      <condition property="version" value="0.2.1" else="0.2.1_all" >
+      <condition property="version" value="0.2.2" else="0.2.2_all" >
           <equals arg1="${just_for_challenge}" arg2="challenge" />
       </condition>
 

@@ -163,7 +163,7 @@ public class Reminder extends HttpServlet {
 			while (medNames.hasNext()) {
 				String aMed = medNames.next();
 				GregorianCalendar dayFromMap = pillDates.get(aMed);
-				if (today.before(dayFromMap)) {
+				if (today.after(dayFromMap)) {
 					retStrb.append("<i>LATE!</i> ");
 				}
 				String xmlFormatDate = dtf.newXMLGregorianCalendar(dayFromMap)

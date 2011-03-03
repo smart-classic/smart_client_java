@@ -2,6 +2,7 @@
 
 // Start of EndClient.java
 
+//#if(1 == 2)
 /**
  * This is both valid Java and valid Velocity template
  * Valid Java so it can be edited as Java, there are only a few velocity directives
@@ -10,7 +11,7 @@
  * There is no need to compile this file (it may be compiled incidentally)
  * The result of this file, after mergeTemplate, is part of a needed Java class.
  */
-//#if(1 == 2)
+
 package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT */
 
 import java.util.List;  /* NOT PART OF GENERATED CLIENT */
@@ -155,7 +156,7 @@ System.out.println("requestToken: " + urlWithRequestToken);
             Map<String,Object> options = new HashMap<String,Object>();
             org.apache.http.HttpResponse httpResponse =
                     smartUtils.smartExecute(hcRequest, options);
-            srr = (String) smartUtils.smartRequestResponse(httpResponse, null, "GET " + accessTokenURL, options);
+            srr = (String) smartUtils.smartRequestResponse(httpResponse, "GET " + accessTokenURL, options);
 
             System.out.println("access token response: " + srr.getClass().getName()  + ": " + srr);
 

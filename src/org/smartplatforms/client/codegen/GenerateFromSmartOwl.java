@@ -49,20 +49,32 @@ import org.openrdf.query.resultio.TupleQueryResultWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.rio.RDFFormat;
 
-import org.smartplatforms.client.codegen.GenClientUtils;
 /**
  * Hello world!
  *
  */
 public class GenerateFromSmartOwl {
     private boolean isForChallenge = false;
+    private Map<String,String> javaDocTable = null;
 
-    private List<String> expectedPredicates = null;
-    GenClientUtils genClientUtils = new GenClientUtils();
+    //private List<String> expectedPredicates = null;
 
 
     private GenerateFromSmartOwl() {
-        expectedPredicates = Arrays.asList("description", "method", "path", "target", "by_internal_id", "category", "above");
+        //expectedPredicates = Arrays.asList("description", "method", "path", "target", "by_internal_id", "category", "above");
+
+        javaDocTable = new HashMap<String,String>();
+        javaDocTable.put("recordId","server's record ID");
+        javaDocTable.put("externalId", "external ID");
+        javaDocTable.put("allergyId", "server's internal ID for this allergy document");
+        javaDocTable.put("medicationId", "server's internal ID for this medication document");
+        javaDocTable.put("fulfillmentId", "server's internal ID for this fulfillment document");
+        javaDocTable.put("medExternalId", "ID assigned to the medication document encompassing this fulfillment");
+        javaDocTable.put("noteId", "server's internal ID for this note document");
+        javaDocTable.put("problemId", "server's internal ID for this problem document");
+        javaDocTable.put("userId", "server's internal ID for this user");
+        javaDocTable.put("labResultId", "server's internal ID for this lab result");
+        javaDocTable.put("labResultPanelId", "server's internal ID for this lab result panel");
     }
 
     public static void main( String[] args )
@@ -274,7 +286,7 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
             }
         }
 
-        callPO.put("javadocTable", genClientUtils.javaDocTable);
+        callPO.put("javadocTable", javaDocTable);
         callPO.put("generateFromSmartOwl", this);
 
         //preVelocity(callPO, fos);

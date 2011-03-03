@@ -103,6 +103,6 @@ $method(
 #{else}null, #end##
 #if($method == "PUT" || $method == "POST")requestBody, ##
 #{else}null, #end##
-null, null, options);
+options);
     }
 #end  ## if for challenge, no PUT, POST or DELETE

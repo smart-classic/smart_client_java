@@ -3,12 +3,12 @@ package org.smartplatforms.client;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import java.util.Map;
 import java.util.HashMap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import java.net.URLDecoder;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.LogFactory;
@@ -24,42 +24,44 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
-import org.w3c.dom.Document;
 
 
 /**
  *
  * @author nate
+ *
+ * Use this if you want RDF data returned in the form of
+ *     org.openrdf.repository.RepositoryConnection objects
+ *
+ * Create an alternate implementation of ResponseTypeConversion
+ *    if you prefer to use another RDF representation package.
  */
 public class DefaultResponseTypeConversion implements ResponseTypeConversion {
 
     private Log logger = null;
 
-    private DocumentBuilderFactory documentBuilderFactory = null;
-    private final DocumentBuilder documentBuilder;
-
-
     public DefaultResponseTypeConversion() throws SMArtClientException {
         logger = LogFactory.getLog(this.getClass());
-        documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        try {
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        } catch (javax.xml.parsers.ParserConfigurationException pce) {
-            throw new SMArtClientException(pce);
-        }
     }
 
 
+    /**
+     * This is to process an http response and return the response
+     * as an instance of an appropriate class.
+     *
+     * @param entity
+     * @return http respose as an instance of an appropriate class
+     * @throws SMArtClientException
+     */
     public Object responseToObject(HttpEntity entity)
             throws SMArtClientException {
         Object retVal = null;
-        Document docForContent = null;
         Header contentTypeH = entity.getContentType();
         String contentType = null;
         if (contentTypeH != null) { contentType = contentTypeH.getValue(); }
         logger.info("contentType header: " + contentType);
-        Header encodingH = entity.getContentEncoding();
-        String encoding = null;
+//        Header encodingH = entity.getContentEncoding();
+//        String encoding = null;
 
         InputStream istrm = null;
         try {
@@ -71,24 +73,13 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
 
         logger.debug("coercing: " + istrmdata);
 
-         // workaround for Pivotal 2172901
-//        if (contentType.startsWith("application/xml") || contentType.startsWith("text/xml"))
         if (contentType.startsWith("application/rdf+xml")) {
             try {
-//                String[] parsedProlog = Utils.getEncoding(istrmdata);
-//                String prologEncoding = "UTF-8";
-//                if (parsedProlog.length == 3) {
-//                    prologEncoding = parsedProlog[1];
-//                }
-
                 ByteArrayInputStream bais = new ByteArrayInputStream(istrmdata.getBytes());
-System.out.println("about to RDFify: " + istrmdata);
-
                 Sail memstore = new MemoryStore();
                 Repository myRepository = new SailRepository(memstore);
                 myRepository.initialize();
                 RepositoryConnection con = myRepository.getConnection();
-
                 con.add(bais, "", RDFFormat.RDFXML);
                 retVal = con;
             } catch (org.openrdf.repository.RepositoryException rpe) {
@@ -113,6 +104,13 @@ System.out.println("about to RDFify: " + istrmdata);
         return retVal;
     }
 
+    /**
+     * turn the http response data into a String.
+     *
+     * @param inputStrm
+     * @return String representation of http response stream
+     * @throws SMArtClientException
+     */
     String dataFromStream(InputStream inputStrm) throws SMArtClientException {
         String xstr = null;
         try {
@@ -140,10 +138,10 @@ System.out.println("about to RDFify: " + istrmdata);
 
         Map<String,String> retVal = new HashMap<String,String>();
 
-        String hresp0 = StringEscapeUtils.unescapeHtml(hresp);
-        logger.info("encoded entitied response body: " + hresp
-                + "         encoded response body: " + hresp0);
-        String[] pairs = hresp0.split("&");
+        //String hresp0 = StringEscapeUtils.unescapeHtml(hresp);
+        //logger.info("encoded entitied response body: " + hresp
+        //        + "         encoded response body: " + hresp0);
+        String[] pairs = hresp.split("&");
         for (int tt = 0; tt < pairs.length; tt++) {
             logger.info("apair: " + pairs[tt]);
         }
@@ -151,16 +149,25 @@ System.out.println("about to RDFify: " + istrmdata);
         for (int ii = 0; ii < pairs.length; ii++) {
             int eix = pairs[ii].indexOf('=');
             if (eix == -1) {
-                throw new SMArtClientException("did not find '=' in param: " + pairs[ii] + "\n" + hresp0);
+                throw new SMArtClientException("did not find '=' in param: " + pairs[ii] + "\n" + hresp);
             }
             String pName = pairs[ii].substring(0,eix);
             if (retVal.get(pName) != null) {
-                throw new SMArtClientException("found multiple '" + pName + "' params." + hresp0);
+                throw new SMArtClientException("found multiple '" + pName + "' params." + hresp);
             }
-            retVal.put(pName, pairs[ii].substring(eix +1));
+
+            String pValue = null;
+            try {
+                pName = URLDecoder.decode(pName, "UTF-8");
+                pValue = URLDecoder.decode(pairs[ii].substring(eix +1), "UTF-8");
+            } catch (java.io.UnsupportedEncodingException uee) {
+                pValue = pairs[ii].substring(eix +1);
+                logger.warn("failure to URLDecode " + hresp, uee);
+            }
+
+//            retVal.put(pName, pairs[ii].substring(eix +1));
+            retVal.put(pName, pValue);
         }
         return retVal;
     }
-
-
 }
