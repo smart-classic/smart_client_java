@@ -127,7 +127,7 @@
 
 
     <target name="build" depends="compile, javadoc">
-        <jar destfile="../build/SMArtClient-${version}.jar" duplicate="fail" strict="fail">
+        <jar destfile="../build/SMArtClient.jar" duplicate="fail" strict="fail">
             <fileset dir="../build/classes">
               <exclude name="../build/classes/org/smartplatforms/client/codegen/**" />
               <exclude name="../build/classes/org/smartplatforms/client/tests/**" />
@@ -147,7 +147,7 @@
         <copy file="../src/log4j.xml" todir="WEB-INF/classes" />
         <copy todir="WEB-INF/lib">
            <fileset dir="../lib" includes="*.jar" excludes="*-javadoc.jar,*-sources.jar,servlet-api-2.3.jar" />
-           <fileset file="../build/SMArtClient-${version}.jar" />
+           <fileset file="../build/SMArtClient.jar" />
         </copy>
         <copy todir="WEB-INF/classes" >
            <fileset dir="../build/classes" includes="org/smartplatforms/client/tests/*.class" />
