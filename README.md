@@ -1,4 +1,4 @@
-#SMArt Java Client Library v0.2
+#SMArt Java Client Library
 Nate Finstein, Children's Hospital Informatics Program
 
 ## Obtaining the code, building a sample app
@@ -34,7 +34,7 @@ If all goes according to plan, you should be able to run the
 When you're ready to build your own app, you'll find the required
 dependencies in:
 
-    build/SMArtClient-0.2.jar
+    build/SMArtClient.jar
     lib/*.jar
 
 The sample servlet is a good place to start:
