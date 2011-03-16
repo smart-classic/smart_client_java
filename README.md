@@ -6,7 +6,7 @@ Nate Finstein, Children's Hospital Informatics Program
 To get started with the SMArt Java Client Library, you'll need
 
     git
-    java
+    java >= 1.6.0_20
     ant >= 1.7.0
 
 Obtain the code, build the client library from the SMArt ontology,
