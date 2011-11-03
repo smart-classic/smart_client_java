@@ -71,7 +71,7 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
         }
         String istrmdata = dataFromStream(istrm);
 
-        logger.debug("coercing: " + istrmdata);
+        logger.info("coercing: " + istrmdata);
 
         if (contentType.startsWith("application/rdf+xml")) {
             try {

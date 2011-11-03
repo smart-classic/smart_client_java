@@ -1,6 +1,6 @@
 /**
  * Example SMArt REST Application: Parses OAuth tokens from
- * browser-supplied cookie, then provides a list of which prescriptions
+ * browser-supplied header, then provides a list of which prescriptions
  * will need to be refilled soon (based on dispense days supply + date)
  *
  * Josh Mandel
@@ -38,14 +38,9 @@ import org.smartplatforms.client.SMArtClient;
 import org.smartplatforms.client.SMArtClientException;
 import org.smartplatforms.client.SMArtOAuthParser;
 import org.smartplatforms.client.TokenSecret;
-
 public class Reminder extends HttpServlet {
-	private String bootstrapPage = "<!DOCTYPE html><html>"
-			+ "<head><script src=\"http://sample-apps.smartplatforms.org/framework/smart/scripts/smart-api-client.js\"></script></head>"
-			+ "<body></body></html>";
-
 	String reminderHeader = "<!DOCTYPE html>\n<html><head>"
-			+ "<script src=\"http://sample-apps.smartplatforms.org/framework/smart/scripts/smart-api-page.js\">"
+			+ "<script src=\"http://sandbox-dev.smartplatforms.org:8001/framework/smart/scripts/smart-api-client.js\">"
 			+ "</script><title>java generated</title></head>\n<body>\n";
 
 	String reminderFooter = "</body></html>";
@@ -53,8 +48,7 @@ public class Reminder extends HttpServlet {
         private ServletConfig sConfig = null;
 	private DatatypeFactory dtf = null;
 
-	private String sparqlForReminders = "PREFIX dc:<http://purl.org/dc/elements/1.1/>\n"
-			+ "PREFIX dcterms:<http://purl.org/dc/terms/>\n"
+	private String sparqlForReminders = "PREFIX dcterms:<http://purl.org/dc/terms/>\n"
 			+ "PREFIX sp:<http://smartplatforms.org/terms#>\n"
 			+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 			+ "   SELECT  ?med ?name ?quant ?when\n"
@@ -64,7 +58,7 @@ public class Reminder extends HttpServlet {
 			+ "          ?medc dcterms:title ?name.\n"
 			+ "          ?med sp:fulfillment ?fill.\n"
 			+ "          ?fill sp:dispenseDaysSupply ?quant.\n"
-			+ "          ?fill dc:date ?when.\n" + "   }";
+			+ "          ?fill dcterms:date ?when.\n" + "   }";
 
 
 	@Override
@@ -85,15 +79,7 @@ public class Reminder extends HttpServlet {
 			throws ServletException {
 		System.out.println("in doGet() for Reminder  --  " + req.getPathInfo());
 		String pathInfo = req.getPathInfo();
-		if (pathInfo.equals("/bootstrap.html")) {
-			try {
-				OutputStream ros = res.getOutputStream();
-				ros.write(bootstrapPage.getBytes());
-				ros.close();
-			} catch (IOException ioe) {
-				throw new ServletException(ioe);
-			}
-		} else if (pathInfo.equals("/index.html")) {
+		if (pathInfo.equals("/index.html")) {
 			presentReminders(req, res);
 		}
 	}

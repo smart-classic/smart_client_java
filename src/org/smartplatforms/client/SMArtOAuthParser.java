@@ -22,12 +22,11 @@ public class SMArtOAuthParser{
 	private HttpParameters params;
 	
     public SMArtOAuthParser(HttpServletRequest r) {
-        String cn = r.getParameter("cookie_name");
-        String cv = getCookieValue(r.getCookies(), cn, null);
+        String cv = r.getParameter("oauth_header");
+
         try {
             cv = java.net.URLDecoder.decode(cv, "UTF-8");
         } catch (UnsupportedEncodingException uee) {
-                // TODO Auto-generated catch block
                 uee.printStackTrace();
         }
 
@@ -46,15 +45,4 @@ public class SMArtOAuthParser{
     	return this.params.getFirst(pname);
     }
     
-     public static String getCookieValue(Cookie[] cookies, String cookieName,
-                    String defaultValue) {
-            for (int i = 0; i < cookies.length; i++) {
-                    Cookie cookie = cookies[i];
-                    if (cookieName.equals(cookie.getName()))
-                            return (cookie.getValue());
-            }
-            return (defaultValue);
-    }
-
-
 }

@@ -61,8 +61,6 @@ public class GenerateFromSmartOwl {
 
 
     private GenerateFromSmartOwl() {
-        //expectedPredicates = Arrays.asList("description", "method", "path", "target", "by_internal_id", "category", "above");
-
         javaDocTable = new HashMap<String,String>();
         javaDocTable.put("recordId","server's record ID");
         javaDocTable.put("externalId", "external ID");
@@ -192,17 +190,16 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
         System.out.println("in dowork0 bbb");
 
         String sparqlAllTheWay =
-            "PREFIX api: <http://smartplatforms.org/api/> \n" +
+            "PREFIX api: <http://smartplatforms.org/terms/api#> \n" +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
-            "SELECT  ?description ?method ?path ?target ?by_internal_id ?category ?above \n" +
-            "    WHERE { { ?call <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://smartplatforms.org/api/call> }.\n" +
-            "            { ?call api:description ?description }.\n" +
+            "SELECT  ?description ?method ?path ?target ?by_internal_id ?category  \n" +
+            "    WHERE { { ?call <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> api:call }.\n" +
+            "            { ?call rdfs:comment ?description }.\n" +
             "            { ?call api:method ?method }.\n" +
             "            { ?call api:path ?path }.\n" +
             "           OPTIONAL { ?call api:target ?target }.\n" +
             "           OPTIONAL { ?call api:by_internal_id ?by_internal_id }.\n" +
             "           OPTIONAL { ?call api:category ?category }.\n" +
-            "           OPTIONAL { ?call api:above ?above }.\n" +
             "        }";
 
         TupleQuery tq = con.prepareTupleQuery(QueryLanguage.SPARQL, sparqlAllTheWay);
@@ -226,13 +223,12 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
         String pathBase = "/";
 
         String[] preds =  new String[] {
-            "description",  "method", "path", "target", "by_internal_id", "category", "above" };
+            "description",  "method", "path", "target", "by_internal_id", "category" };
         for (String pred : preds) {
             Value objectVal = bindSet.getValue(pred);
             String objectStr = null;
             if (objectVal == null
-                    && ( pred.equals("above")
-                        || pred.equals("target")
+                    && ( pred.equals("target")
                         || pred.equals("by_internal_id")
                         || pred.equals("category") )
                ) {
