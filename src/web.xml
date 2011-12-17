@@ -10,7 +10,7 @@
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-   xsi:schemaLocation='http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd' version="">
+   xsi:schemaLocation='http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd' version="2.4">
 
     <description>test SMArt_client_java oauth dance, same as python test app, but in Java</description>
     <display-name>SMArt_client_java OAuth dance tester</display-name>
@@ -22,7 +22,6 @@
         <init-param>
             <param-name>consumerKey</param-name>
             <param-value>my-app@apps.smartplatforms.org</param-value>
-            <!-- param-value>developer-sandbox@apps.smartplatforms.org</param-value -->
         </init-param>
         <init-param>
             <param-name>consumerSecret</param-name>
@@ -32,14 +31,11 @@
             <param-name>serverBaseURL</param-name>
             <param-value>http://sandbox-api.smartplatforms.org</param-value>
         </init-param>
-
     </servlet>
 
     <servlet-mapping>
         <servlet-name>smartapp</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-
-
 
 </web-app>
