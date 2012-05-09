@@ -37,6 +37,7 @@ import org.openrdf.query.BindingSet;
 import org.smartplatforms.client.SMArtClient;
 import org.smartplatforms.client.SMArtClientException;
 import org.smartplatforms.client.SMArtOAuthParser;
+import org.smartplatforms.client.SmartResponse;
 import org.smartplatforms.client.TokenSecret;
 public class Reminder extends HttpServlet {
 	String reminderHeader = "<!DOCTYPE html>\n<html><head>"
@@ -107,8 +108,9 @@ public class Reminder extends HttpServlet {
 							     sConfig.getInitParameter("consumerSecret"),
 							     sConfig.getInitParameter("serverBaseURL"));
 
-			RepositoryConnection meds = (RepositoryConnection) client
+                        SmartResponse resObj = client
 					.records_X_medications_GET(recordId, tokenSecret, null);
+                        RepositoryConnection meds = resObj.graph;
 
 			String pillWhen = null;
 			String pillQuant = null;
@@ -145,6 +147,7 @@ public class Reminder extends HttpServlet {
 
 			Iterator<String> medNames = pillDates.keySet().iterator();
 			StringBuffer retStrb = new StringBuffer();
+                        Boolean late = false;
 			GregorianCalendar today = new GregorianCalendar();
 			while (medNames.hasNext()) {
 				String aMed = medNames.next();
@@ -156,6 +159,7 @@ public class Reminder extends HttpServlet {
 						.toXMLFormat();
 				retStrb.append(aMed + ": <b>" + xmlFormatDate.substring(0, 10)
 						+ "</b><br>");
+                                late = true;
 			}
 			if (retStrb.length() == 0) {
 				retStrb.append("Up to date on all meds.");
@@ -163,7 +167,7 @@ public class Reminder extends HttpServlet {
 
 			try {
 				OutputStream resOut = res.getOutputStream();
-				resOut.write("Refills due!<br><br>".getBytes());
+				if (late) resOut.write("Refills due!<br><br>".getBytes());
 				resOut.write(retStrb.toString().getBytes());
 				resOut.write(reminderFooter.getBytes());
 				resOut.close();

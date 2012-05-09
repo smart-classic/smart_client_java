@@ -155,7 +155,7 @@ public class Utils {
     * @param requestBody value to PUT or POST, not necessarily a Document
     * @param options possible options include: sockentTimeout; connectionTimeout
     */
-    public Object smartRequest(
+    public SmartResponse smartRequest(
             String reqMeth,
             String reletivePath,
             Object queryString,
@@ -177,7 +177,7 @@ public class Utils {
         return smartRequestResponse(response, reqMeth + " " + reletivePath, options);
     }
 
-    public Object smartRequestResponse(HttpResponse response, String requestdisplay, Map<String,Object> options)
+    public SmartResponse smartRequestResponse(HttpResponse response, String requestdisplay, Map<String,Object> options)
             throws SMArtClientException {
 
         StatusLine statusLine = response.getStatusLine();

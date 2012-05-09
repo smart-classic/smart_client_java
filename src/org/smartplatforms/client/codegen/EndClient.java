@@ -133,6 +133,7 @@ System.out.println("requestToken: " + urlWithRequestToken);
         return retVal;
     }
     
+    /*
     public String[] getAccessToken_GET(String requestToken, String requestTokenSecret, String verifier)
             throws SMArtClientException {
         AbstractHttpClient httpClient = new DefaultHttpClient();
@@ -187,6 +188,7 @@ System.out.println("requestToken: " + urlWithRequestToken);
         }
         return retVal;
     }
+    */
     
 //    private String prepareQueryString(String... pairs) throws SMArtClientException {
 //        if (pairs.length % 2 != 0) {

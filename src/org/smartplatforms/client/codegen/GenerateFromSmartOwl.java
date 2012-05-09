@@ -73,11 +73,16 @@ public class GenerateFromSmartOwl {
         javaDocTable.put("userId", "server's internal ID for this user");
         javaDocTable.put("labResultId", "server's internal ID for this lab result");
         javaDocTable.put("labResultPanelId", "server's internal ID for this lab result panel");
+        javaDocTable.put("smartAppId", "server's internal ID for this app");
+        javaDocTable.put("immunizationId", "server's internal ID for this immunization record");
+        javaDocTable.put("vitalSignsId", "server's internal ID for this vital signs record");
+        javaDocTable.put("descriptor", "server's internal ID for this app");
+        javaDocTable.put("encounterId", "server's internal ID for this encounter");
     }
 
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        System.out.println( "Starting client generation" );
         GenerateFromSmartOwl instance = new GenerateFromSmartOwl();
 
         if (args.length == 2) {
@@ -103,7 +108,7 @@ public class GenerateFromSmartOwl {
             throw new RuntimeException(excp);
         }
         instance.dowork(args[0] /*full path to smart.owl*/);
-        System.out.println( "'later World! ============" );
+        System.out.println( "Finished client generation" );
     }
 
 
@@ -116,6 +121,7 @@ public class GenerateFromSmartOwl {
             //writeJavaFragment("StartClient.java", fos);
 
             VelocityContext startEndVC = new VelocityContext();
+            System.out.println ("challenge version: " + isForChallenge);
             startEndVC.put("challenge", isForChallenge);
             startEndVC.put("linefeed", "\n");
             
@@ -176,7 +182,6 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
 
     /** use velocity to help generate the java code */
     private void dowork0(Writer writer, String smartOwlFileName) throws org.openrdf.OpenRDFException, IOException {
-        System.out.println("in dowork0 aaa");
 
         Sail memstore = new MemoryStore();
         Repository myRepository = new SailRepository(memstore);
@@ -187,7 +192,6 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
 //        File apiOwlFile = new File("/home/jmandel/smart/smart_server/smart/document_processing/schema/smart.owl");
         File apiOwlFile = new File(smartOwlFileName);
         con.add(apiOwlFile, null, RDFFormat.RDFXML, new Resource[0]);
-        System.out.println("in dowork0 bbb");
 
         String sparqlAllTheWay =
             "PREFIX api: <http://smartplatforms.org/terms/api#> \n" +
@@ -206,7 +210,6 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
         TupleQueryResult tqr = tq.evaluate();
 
         // for each api:call
-        System.out.println("in dowork0 ccc");
         while (tqr.hasNext()) {
             BindingSet bindSet = tqr.next();  // get next api:call
             //System.out.println("description: " + bindSet.getValue("description").stringValue());

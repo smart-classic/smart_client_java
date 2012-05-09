@@ -35,6 +35,7 @@
 
     <target name="make_build_dir">
        <copy file="../lib/openrdf-sesame-2.3.2-onejar.jar" todir="../lib-codegen" />
+       <copy file="../lib/json-lib-2.4-jdk15.jar" todir="../lib-codegen" />
        <mkdir dir="../build/classes"/>
     </target>
 

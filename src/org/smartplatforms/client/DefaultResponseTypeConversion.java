@@ -1,29 +1,22 @@
 package org.smartplatforms.client;
 
-import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import java.util.Map;
-import java.util.HashMap;
-
-import java.net.URLDecoder;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.logging.LogFactory;
+import java.io.InputStream;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import org.apache.commons.logging.Log;
-import org.apache.http.HttpEntity;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
-
-import org.openrdf.sail.memory.MemoryStore;
-import org.openrdf.sail.Sail;
-import org.openrdf.repository.sail.SailRepository;
+import org.apache.http.HttpEntity;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.sail.Sail;
+import org.openrdf.sail.memory.MemoryStore;
 
 
 /**
@@ -53,15 +46,13 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
      * @return http respose as an instance of an appropriate class
      * @throws SMArtClientException
      */
-    public Object responseToObject(HttpEntity entity)
-            throws SMArtClientException {
-        Object retVal = null;
+    @Override
+    public SmartResponse responseToObject(HttpEntity entity) throws SMArtClientException {
+        SmartResponse retObj = new SmartResponse ();
         Header contentTypeH = entity.getContentType();
         String contentType = null;
         if (contentTypeH != null) { contentType = contentTypeH.getValue(); }
         logger.info("contentType header: " + contentType);
-//        Header encodingH = entity.getContentEncoding();
-//        String encoding = null;
 
         InputStream istrm = null;
         try {
@@ -73,35 +64,34 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
 
         logger.info("coercing: " + istrmdata);
 
-        if (contentType.startsWith("application/rdf+xml")) {
-            try {
-                ByteArrayInputStream bais = new ByteArrayInputStream(istrmdata.getBytes());
-                Sail memstore = new MemoryStore();
-                Repository myRepository = new SailRepository(memstore);
-                myRepository.initialize();
-                RepositoryConnection con = myRepository.getConnection();
-                con.add(bais, "", RDFFormat.RDFXML);
-                retVal = con;
-            } catch (org.openrdf.repository.RepositoryException rpe) {
-                logger.debug(istrmdata, rpe);
-                throw new SMArtClientException(rpe);
-            } catch (org.openrdf.rio.RDFParseException rdfpe) {
-                logger.debug(istrmdata, rdfpe);
-                throw new SMArtClientException(rdfpe);
-            } catch (IOException ioe) {
-                logger.debug(istrmdata, ioe);
-                throw new SMArtClientException(ioe);
-            }
-        } else if (contentType.startsWith("application/x-www-form-urlencoded")) {
-            retVal = mapFromFormEncodedString(istrmdata);
-        } else if (contentType.startsWith("text/plain")) {
-            retVal = istrmdata;
-        } else {
-            retVal = new String[2];
-            ((String[])retVal)[0] = contentType;
-            ((String[])retVal)[1] = istrmdata;
+        retObj.data = istrmdata;
+        retObj.contentType = contentType;
+        
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(istrmdata.getBytes());
+            Sail memstore = new MemoryStore();
+            Repository myRepository = new SailRepository(memstore);
+            myRepository.initialize();
+            RepositoryConnection con = myRepository.getConnection();
+            con.add(bais, "", RDFFormat.RDFXML);
+            retObj.graph = con;
+        } catch (RepositoryException rpe) {
+            logger.debug(istrmdata, rpe);
+            throw new SMArtClientException(rpe);
+        } catch (IOException ioe) {
+            logger.debug(istrmdata, ioe);
+            throw new SMArtClientException(ioe);
+        } catch (RDFParseException rdfpe) {
+            logger.debug(istrmdata, rdfpe);
         }
-        return retVal;
+        
+        try {
+            retObj.json = (JSONObject) JSONSerializer.toJSON( istrmdata );
+        } catch (Exception e) {
+            logger.debug(istrmdata, e);
+        }
+        
+        return retObj;
     }
 
     /**
@@ -116,58 +106,16 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
         try {
             int xcc = inputStrm.read();
             StringBuffer xstrb = new StringBuffer();
-//            StringBuffer unexpectedBuffer = new StringBuffer();
             while (xcc != -1) {
                 xstrb.append((char) xcc);
                 xcc = inputStrm.read();
             }
             xstr = xstrb.toString();
 
-        } catch (java.io.IOException ioe) {
+        } catch (IOException ioe) {
             throw new SMArtClientException(ioe);
         }
         return xstr;
     }
 
-    /**
-    * given a form-urlencoded response, return that response in the
-    * form of a key-value map.
-    */
-    public Map<String,String> mapFromFormEncodedString(String hresp)
-            throws SMArtClientException {
-
-        Map<String,String> retVal = new HashMap<String,String>();
-
-        //String hresp0 = StringEscapeUtils.unescapeHtml(hresp);
-        //logger.info("encoded entitied response body: " + hresp
-        //        + "         encoded response body: " + hresp0);
-        String[] pairs = hresp.split("&");
-        for (int tt = 0; tt < pairs.length; tt++) {
-            logger.info("apair: " + pairs[tt]);
-        }
-
-        for (int ii = 0; ii < pairs.length; ii++) {
-            int eix = pairs[ii].indexOf('=');
-            if (eix == -1) {
-                throw new SMArtClientException("did not find '=' in param: " + pairs[ii] + "\n" + hresp);
-            }
-            String pName = pairs[ii].substring(0,eix);
-            if (retVal.get(pName) != null) {
-                throw new SMArtClientException("found multiple '" + pName + "' params." + hresp);
-            }
-
-            String pValue = null;
-            try {
-                pName = URLDecoder.decode(pName, "UTF-8");
-                pValue = URLDecoder.decode(pairs[ii].substring(eix +1), "UTF-8");
-            } catch (java.io.UnsupportedEncodingException uee) {
-                pValue = pairs[ii].substring(eix +1);
-                logger.warn("failure to URLDecode " + hresp, uee);
-            }
-
-//            retVal.put(pName, pairs[ii].substring(eix +1));
-            retVal.put(pName, pValue);
-        }
-        return retVal;
-    }
 }
