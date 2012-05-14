@@ -41,7 +41,7 @@ import org.smartplatforms.client.SmartResponse;
 import org.smartplatforms.client.TokenSecret;
 public class Reminder extends HttpServlet {
 	String reminderHeader = "<!DOCTYPE html>\n<html><head>"
-			+ "<script src=\"http://sandbox-dev.smartplatforms.org:8001/framework/smart/scripts/smart-api-client.js\">"
+			+ "<script src=\"http://sample-apps.smartplatforms.org/framework/smart/scripts/smart-api-client.js\">"
 			+ "</script><title>java generated</title></head>\n<body>\n";
 
 	String reminderFooter = "</body></html>";
@@ -104,9 +104,9 @@ public class Reminder extends HttpServlet {
 		// Represent the list as an RDF graph
 		try {
 			SmartClient client = new SmartClient(
-							     sConfig.getInitParameter("consumerKey"),
+							     authParams.getParam("oauth_consumer_key"),
 							     sConfig.getInitParameter("consumerSecret"),
-							     sConfig.getInitParameter("serverBaseURL"));
+							     authParams.getParam("smart_container_api_base"));
 
                         SmartResponse resObj = client
 					.records_X_medications_GET(recordId, tokenSecret, null);
