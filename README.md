@@ -34,7 +34,7 @@ If all goes according to plan, you should be able to run the
 When you're ready to build your own app, you'll find the required
 dependencies in:
 
-    build/SMArtClient.jar
+    build/SmartClient.jar
     lib/*.jar
 
 The sample servlet is a good place to start:

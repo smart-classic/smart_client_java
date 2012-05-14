@@ -8,9 +8,9 @@ package org.smartplatforms.client;
  *
  * @author nate
  */
-public class SMArtClientExceptionHttp404 extends SMArtClientException {
-    public SMArtClientExceptionHttp404() { super(); }
-    public SMArtClientExceptionHttp404(String message) { super(message); }
-    public SMArtClientExceptionHttp404(String message, Throwable cause) { super(message, cause); }
-    public SMArtClientExceptionHttp404(Throwable cause)  { super(cause); }
+public class SmartClientExceptionHttp404 extends SmartClientException {
+    public SmartClientExceptionHttp404() { super(); }
+    public SmartClientExceptionHttp404(String message) { super(message); }
+    public SmartClientExceptionHttp404(String message, Throwable cause) { super(message, cause); }
+    public SmartClientExceptionHttp404(Throwable cause)  { super(cause); }
 }

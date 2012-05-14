@@ -10,6 +10,6 @@ import org.apache.http.HttpEntity;
  */
 public interface ResponseTypeConversion {
 
-        SmartResponse responseToObject(HttpEntity entity) throws SMArtClientException;
+        SmartResponse responseToObject(HttpEntity entity) throws SmartClientException;
 
 }

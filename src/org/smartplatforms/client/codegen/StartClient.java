@@ -2,7 +2,7 @@
  /**
  * This is both valid Java and valid Velocity template
  * Valid Java so it can be edited as Java, there are only a few velocity directives
- * Valid Velocity so it can be used to easily generate SMArt client
+ * Valid Velocity so it can be used to easily generate SMART client
  * This is meant to be input to Velocity.mergeTemplate(...).
  * There is no need to compile this file (it may be compiled incidentally)
  * The result of this file, after mergeTemplate, is part of a needed Java class.
@@ -39,13 +39,13 @@ import oauth.signpost.http.HttpParameters;
 //#if (1 == 2)  ## exclude following line from output
 import org.smartplatforms.client.Utils;
 import org.smartplatforms.client.DefaultResponseTypeConversion;
-import org.smartplatforms.client.SMArtClientException;
+import org.smartplatforms.client.SmartClientException;
 //#end
 
 //#if (1 == 2)  ## exclude following line from output
 public class StartClient {  /* NOT PART OF GENERATED CLIENT */
 //#end
-// ${linefeed}public class SMArtClient {    #if (1 == 2)/* UNCOMMENT IN GENERATED CLIENT */#end
+// ${linefeed}public class SmartClient {    #if (1 == 2)/* UNCOMMENT IN GENERATED CLIENT */#end
 
     private String consumerKey = null;
     private String consumerSecret = null;
@@ -60,9 +60,9 @@ public class StartClient {  /* NOT PART OF GENERATED CLIENT */
 //#if (1 == 2)  ## exclude following line from output
     public StartClient(  /* NOT PART OF GENERATED CLIENT */
 //#end
-// ${linefeed}    public SMArtClient(     ${linefeed}#if (1 == 2)/* UNCOMMENT IN GENERATED CLIENT */#end
+// ${linefeed}    public SmartClient(     ${linefeed}#if (1 == 2)/* UNCOMMENT IN GENERATED CLIENT */#end
             String consumerKey, String consumerSecret, String baseURL)
-            throws SMArtClientException {
+            throws SmartClientException {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
         smartUtils = new Utils(consumerKey, consumerSecret, baseURL,
@@ -73,10 +73,10 @@ public class StartClient {  /* NOT PART OF GENERATED CLIENT */
     * in case not using DefaultResponseTypeConversion or not using default httpTimeout
     * #if (1 == 2)  ## exclude following line from output */
     public StartClient(  // NOT PART OF GENERATED CLIENT
-// */#end  ${linefeed}    */${linefeed}    public SMArtClient(
+// */#end  ${linefeed}    */${linefeed}    public SmartClient(
             String consumerKey, String consumerSecret, String baseURL,
             ResponseTypeConversion responseTypeConversion, int suppliedHttpTimeout)
-            throws SMArtClientException {
+            throws SmartClientException {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
         smartUtils = new Utils(consumerKey, consumerSecret, baseURL,
@@ -94,10 +94,10 @@ public class StartClient {  /* NOT PART OF GENERATED CLIENT */
     * 'oauth_callback' :    'oob'
     * #if (1 == 2)  ## exclude following line from output */
     public StartClient(  // NOT PART OF GENERATED CLIENT
-// */#end ${linefeed}    */${linefeed}    public SMArtClient(
+// */#end ${linefeed}    */${linefeed}    public SmartClient(
             String consumerKey, String consumerSecret, String baseURL,
             String requestTokenURL, String accessTokenURL, String authorizeURL, String oauthCallback)
-            throws SMArtClientException {
+            throws SmartClientException {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
         this.requestTokenURL = requestTokenURL;
@@ -119,11 +119,11 @@ public class StartClient {  /* NOT PART OF GENERATED CLIENT */
     * 'oauth_callback' :    'oob'
     * #if (1 == 2)  ## exclude following line from output */
     public StartClient(  // NOT PART OF GENERATED CLIENT
-// */#end ${linefeed}    */${linefeed}    public SMArtClient(
+// */#end ${linefeed}    */${linefeed}    public SmartClient(
             String consumerKey, String consumerSecret, String baseURL,
             String requestTokenURL, String accessTokenURL, String authorizeURL, String oauthCallback,
             ResponseTypeConversion responseTypeConversion, int suppliedHttpTimeout)
-            throws SMArtClientException {
+            throws SmartClientException {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
         this.requestTokenURL = requestTokenURL;

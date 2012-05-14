@@ -1,9 +1,9 @@
-ivy-2.2.0.jar, included in this SMArtClient distribution, is covered by the license contained in the file "LICENSE_IVY.txt"
+ivy-2.2.0.jar, included in this SmartClient distribution, is covered by the license contained in the file "LICENSE_IVY.txt"
 
-openrdf-sesame-2.3.2-onejar.jar, included in this SMArtClient distribution, is covered by the license contained in the file "LICENSE_OPENRDF.txt"
+openrdf-sesame-2.3.2-onejar.jar, included in this SmartClient distribution, is covered by the license contained in the file "LICENSE_OPENRDF.txt"
 
 Running bin/build.sh, or otherwise running the build process of this distribution, causes other 3rd party jar files to be downloaded to your local machine.
-You might re-distribute, the jar files that will be in the lib directory, as part of any application you create which makes use of SMArtClient.
+You might re-distribute, the jar files that will be in the lib directory, as part of any application you create which makes use of SmartClient.
 It is your responsibility to comply with the licenses covering these third party jars.
 
 The licenses directory contains some license files related to the jars that the build process installs into the lib directory.

@@ -12,8 +12,8 @@
    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
    xsi:schemaLocation='http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd' version="2.4">
 
-    <description>test SMArt_client_java oauth dance, same as python test app, but in Java</description>
-    <display-name>SMArt_client_java OAuth dance tester</display-name>
+    <description>test smart_client_java oauth dance, same as python test app, but in Java</description>
+    <display-name>smart_client_java OAuth dance tester</display-name>
 
     <servlet>
         <servlet-name>smartapp</servlet-name>

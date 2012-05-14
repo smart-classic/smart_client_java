@@ -33,7 +33,7 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
 
     private Log logger = null;
 
-    public DefaultResponseTypeConversion() throws SMArtClientException {
+    public DefaultResponseTypeConversion() throws SmartClientException {
         logger = LogFactory.getLog(this.getClass());
     }
 
@@ -44,10 +44,10 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
      *
      * @param entity
      * @return http respose as an instance of an appropriate class
-     * @throws SMArtClientException
+     * @throws SmartClientException
      */
     @Override
-    public SmartResponse responseToObject(HttpEntity entity) throws SMArtClientException {
+    public SmartResponse responseToObject(HttpEntity entity) throws SmartClientException {
         SmartResponse retObj = new SmartResponse ();
         Header contentTypeH = entity.getContentType();
         String contentType = null;
@@ -58,7 +58,7 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
         try {
             istrm = entity.getContent();
         } catch (IOException ioe) {
-                throw new SMArtClientException(ioe);
+                throw new SmartClientException(ioe);
         }
         String istrmdata = dataFromStream(istrm);
 
@@ -77,10 +77,10 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
             retObj.graph = con;
         } catch (RepositoryException rpe) {
             logger.debug(istrmdata, rpe);
-            throw new SMArtClientException(rpe);
+            throw new SmartClientException(rpe);
         } catch (IOException ioe) {
             logger.debug(istrmdata, ioe);
-            throw new SMArtClientException(ioe);
+            throw new SmartClientException(ioe);
         } catch (RDFParseException rdfpe) {
             logger.debug(istrmdata, rdfpe);
         }
@@ -99,9 +99,9 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
      *
      * @param inputStrm
      * @return String representation of http response stream
-     * @throws SMArtClientException
+     * @throws SmartClientException
      */
-    String dataFromStream(InputStream inputStrm) throws SMArtClientException {
+    String dataFromStream(InputStream inputStrm) throws SmartClientException {
         String xstr = null;
         try {
             int xcc = inputStrm.read();
@@ -113,7 +113,7 @@ public class DefaultResponseTypeConversion implements ResponseTypeConversion {
             xstr = xstrb.toString();
 
         } catch (IOException ioe) {
-            throw new SMArtClientException(ioe);
+            throw new SmartClientException(ioe);
         }
         return xstr;
     }

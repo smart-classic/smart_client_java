@@ -116,7 +116,7 @@ public class GenerateFromSmartOwl {
     private void dowork(String smartOwlFileName) {
         try {
             
-            OutputStream fos = new FileOutputStream("../build/SMArtClient.java");
+            OutputStream fos = new FileOutputStream("../build/SmartClient.java");
             Writer writer = new OutputStreamWriter(fos);
             //writeJavaFragment("StartClient.java", fos);
 

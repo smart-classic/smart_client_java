@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="SMArt_client_IVY" default="build-test" basedir="."  xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="smart_client_IVY" default="build-test" basedir="."  xmlns:ivy="antlib:org.apache.ivy.ant">
     <description>Builds, using IVY to resolve dependencies.</description>
 
 
@@ -40,7 +40,7 @@
     </target>
 
     <target name="-retrieve-for-codegen">
-        <ivy:settings file="SMArt-ivysettings.xml" />
+        <ivy:settings file="smart-ivysettings.xml" />
         <ivy:retrieve conf="codegen"  pattern="../lib-codegen/[artifact]-[revision].[ext]" />
     </target>
 
@@ -59,20 +59,20 @@
     </target>
 
     <!-- ========================================================== -->
-    <target name="-check-delete-SMArtClient-0" >
-        <condition property="SMArtClient-present">
-            <available file="../src/org/smartplatforms/client/SMArtClient.java"/>
+    <target name="-check-delete-SmartClient-0" >
+        <condition property="SmartClient-present">
+            <available file="../src/org/smartplatforms/client/SmartClient.java"/>
         </condition>
     </target>
-    <target name="-check-delete-SMArtClient-1" depends="-check-delete-SMArtClient-0" if="SMArtClient-present">
+    <target name="-check-delete-SmartClient-1" depends="-check-delete-SmartClient-0" if="SmartClient-present">
        <input
-           message="May ant overwrite ../src/org/smartplatforms/client/SMArtClient.java with the newly created SMArtClient.java? "
+           message="May ant overwrite ../src/org/smartplatforms/client/SmartClient.java with the newly created SmartClient.java? "
            validargs="Y,n" 
-           addproperty="SMArtClient-deletable" />
-       <condition property="SMArtClient-protect">
-         <not> <equals arg1="${SMArtClient-deletable}" arg2="Y" trim="true" /> </not>
+           addproperty="SmartClient-deletable" />
+       <condition property="SmartClient-protect">
+         <not> <equals arg1="${SmartClient-deletable}" arg2="Y" trim="true" /> </not>
        </condition>
-       <fail if="SMArtClient-protect"  message="stopping because you did not permit overwrite" />
+       <fail if="SmartClient-protect"  message="stopping because you did not permit overwrite" />
     </target>
     <!-- ========================================================== -->
 
@@ -81,7 +81,7 @@
          <fail  message="stopping because smart.owl file not found, use -Dsmart_owl_path=&lt;path-to-smart.owl&gt; when running this ant project" />
     </target>
     <target name="run-codegen" 
-               depends="build-codegen,-retrieve-for-codegen,-check-smart-owl-presence,-check-delete-SMArtClient-1" >
+               depends="build-codegen,-retrieve-for-codegen,-check-smart-owl-presence,-check-delete-SmartClient-1" >
        <copy file="../src/org/smartplatforms/client/codegen/StartClient.java" todir="./" />
        <copy file="../src/org/smartplatforms/client/codegen/EndClient.java" todir="./" />
        <copy file="../src/generatedSource.vsl" todir="./" />
@@ -94,12 +94,12 @@
            <arg value="${just_for_challenge}" />
        </java>
 
-       <copy file="../build/SMArtClient.java" todir="../src/org/smartplatforms/client" />
+       <copy file="../build/SmartClient.java" todir="../src/org/smartplatforms/client" />
     </target>
 
 
     <target name="compile" depends="run-codegen,make_build_dir">
-        <ivy:settings file="SMArt-ivysettings.xml" />
+        <ivy:settings file="smart-ivysettings.xml" />
         <ivy:retrieve conf="run"  pattern="../lib/[artifact]-[revision].[ext]" />
 
         <javac destdir="../build/classes" srcdir="../src" includes="**/client/tests/*.java,**/client/*.java"
@@ -111,7 +111,7 @@
     </target>
 
     <target name="-javadoc-test">
-        <uptodate property="javadoc-uptodate" srcfile="../src/org/smartplatforms/client/SMArtClient.java" targetfile="../javadoc/index.html" />
+        <uptodate property="javadoc-uptodate" srcfile="../src/org/smartplatforms/client/SmartClient.java" targetfile="../javadoc/index.html" />
     </target>
     <target name="javadoc" depends="-javadoc-test" unless="javadoc-uptodate">
        <javadoc destdir="../javadoc" access="package" use="true" failonerror="true" >
@@ -128,13 +128,13 @@
 
 
     <target name="build" depends="compile, javadoc">
-        <jar destfile="../build/SMArtClient.jar" duplicate="fail" strict="fail">
+        <jar destfile="../build/SmartClient.jar" duplicate="fail" strict="fail">
             <fileset dir="../build/classes">
               <exclude name="../build/classes/org/smartplatforms/client/codegen/**" />
               <exclude name="../build/classes/org/smartplatforms/client/tests/**" />
             </fileset>
             <manifest>
-              <attribute name="Implementation-Vendor" value="SMArt"/>
+              <attribute name="Implementation-Vendor" value="SMART"/>
               <attribute name="Implementation-Title" value="Java client"/>
               <attribute name="Implementation-Version" value="${version}"/>
             </manifest>
@@ -148,7 +148,7 @@
         <copy file="../src/log4j.xml" todir="WEB-INF/classes" />
         <copy todir="WEB-INF/lib">
            <fileset dir="../lib" includes="*.jar" excludes="*-javadoc.jar,*-sources.jar,servlet-api-2.3.jar" />
-           <fileset file="../build/SMArtClient.jar" />
+           <fileset file="../build/SmartClient.jar" />
         </copy>
         <copy todir="WEB-INF/classes" >
            <fileset dir="../build/classes" includes="org/smartplatforms/client/tests/*.class" />
@@ -156,7 +156,7 @@
         <jar destfile="../build/smartapp.war" duplicate="fail" strict="fail">
            <fileset dir="." includes="WEB-INF/**" />
            <manifest>
-              <attribute name="Implementation-Vendor" value="SMArt"/>
+              <attribute name="Implementation-Vendor" value="SMART"/>
               <attribute name="Implementation-Title" value="Java client"/>
               <attribute name="Implementation-Version" value="${version}"/>
            </manifest>

@@ -18,7 +18,7 @@
 -->
 <ivysettings>
 	<settings defaultResolver="default"/>
-	<include url="SMArt-ivysettings-public.xml"/>
+	<include url="smart-ivysettings-public.xml"/>
 	<include url="${ivy.default.settings.dir}/ivysettings-shared.xml"/>
 	<include url="${ivy.default.settings.dir}/ivysettings-local.xml"/>
 	<include url="${ivy.default.settings.dir}/ivysettings-main-chain.xml"/>

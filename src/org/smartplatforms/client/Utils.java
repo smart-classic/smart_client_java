@@ -52,7 +52,7 @@ public class Utils {
 
     public Utils(String consumerKey, String consumerSecret, String baseURL,
             ResponseTypeConversion responseTypeConversion, Integer httpTimeout)
-            throws SMArtClientException {
+            throws SmartClientException {
         logger = LogFactory.getLog(this.getClass());
         
         this.consumerKey = consumerKey;
@@ -71,7 +71,7 @@ public class Utils {
         }
     }
 
-    String dataFromStream(InputStream inputStrm) throws SMArtClientException {
+    String dataFromStream(InputStream inputStrm) throws SmartClientException {
         String xstr = null;
         try {
             int xcc = inputStrm.read();
@@ -83,7 +83,7 @@ public class Utils {
             xstr = xstrb.toString();
 
         } catch (java.io.IOException ioe) {
-            throw new SMArtClientException(ioe);
+            throw new SmartClientException(ioe);
         }
         return xstr;
     }
@@ -95,14 +95,14 @@ public class Utils {
      * @param consumerSecret0 null if using the consumerKey this instance was built with
      * @param token    null in case of signing a 2-legged call
      * @param tokenSecret   null in case of signing a 2-legged call
-     * @throws SMArtClientException
+     * @throws SmartClientException
      */
     void signWithSignpost(
             HttpUriRequest hcRequest,
             String consumerKey0,
             String consumerSecret0,
             String token,
-            String tokenSecret) throws SMArtClientException {
+            String tokenSecret) throws SmartClientException {
 
          String consumerKeyLocal = null;
          String consumerSecretLocal = null;
@@ -129,11 +129,11 @@ public class Utils {
              oauthConsumer.sign(spRequest);
 ///* un-comment this also when un-commenting the above    */ System.setProperty("debug", whatDebugWas);
          } catch (OAuthMessageSignerException omse) {
-             throw new SMArtClientException(omse);
+             throw new SmartClientException(omse);
          } catch (OAuthExpectationFailedException oefe) {
-             throw new SMArtClientException(oefe);
+             throw new SmartClientException(oefe);
          } catch (oauth.signpost.exception.OAuthCommunicationException oce) {
-             throw new SMArtClientException(oce);
+             throw new SmartClientException(oce);
          }
     }
 
@@ -161,7 +161,7 @@ public class Utils {
             Object queryString,
             TokenSecret accessTokenAndSecret,
             Object requestBody,   // String or byte[]
-            Map<String,Object> options) throws SMArtClientException {
+            Map<String,Object> options) throws SmartClientException {
         
         if (options == null) { options = new HashMap<String,Object>(); }
 
@@ -178,7 +178,7 @@ public class Utils {
     }
 
     public SmartResponse smartRequestResponse(HttpResponse response, String requestdisplay, Map<String,Object> options)
-            throws SMArtClientException {
+            throws SmartClientException {
 
         StatusLine statusLine = response.getStatusLine();
         HttpEntity httpEntity = response.getEntity();
@@ -186,10 +186,10 @@ public class Utils {
         int statusCode = statusLine.getStatusCode();
         if (statusCode == 404) {
             String errText = dataFromStream(getContent(httpEntity));
-            throw new SMArtClientExceptionHttp404("response code from indivo 404: " + errText);
+            throw new SmartClientExceptionHttp404("response code from indivo 404: " + errText);
         } else if (statusCode != 200) {
             String errText = dataFromStream(getContent(httpEntity));
-            throw new SMArtClientException(
+            throw new SmartClientException(
                     "response code from indivo not 200, was: " + statusCode + "\n" + errText);
         }
 
@@ -219,12 +219,12 @@ public class Utils {
     }
 
 
-    private InputStream getContent(HttpEntity httpEntity) throws SMArtClientException {
+    private InputStream getContent(HttpEntity httpEntity) throws SmartClientException {
         InputStream istrm = null;
         try {
             istrm = httpEntity.getContent();
         } catch (IOException ioe) {
-            throw new SMArtClientException(ioe);
+            throw new SmartClientException(ioe);
         }
         return  istrm;
     }
@@ -239,7 +239,7 @@ public class Utils {
  * @param requestBody    null in case of "GET"
  * @param options only current options are connectionTimeout and socketTimeout
  * @return
- * @throws SMArtClientException
+ * @throws SmartClientException
  */
     private HttpResponse phaRequestPart1(
             String reqMeth,
@@ -248,7 +248,7 @@ public class Utils {
             String phaToken,
             String phaTokenSecret,
             Object requestBody,   // String or byte[]
-            Map<String,Object> options) throws SMArtClientException {
+            Map<String,Object> options) throws SmartClientException {
 
         String displayQS = "null";
         if (queryString != null) {
@@ -265,7 +265,7 @@ public class Utils {
         } else if (queryString instanceof String) {
             String qsString = (String) queryString;
             if (qsString.indexOf('=') < 1) {
-                throw new SMArtClientException(
+                throw new SmartClientException(
         	        "unexpected queryString, did not have any key/value delimiter of '=': " + queryString);
             }
         	queryString0 = qsString;
@@ -278,7 +278,7 @@ public class Utils {
 
                 Object keyObj = iter.next();
                 if (! (keyObj instanceof String)) {
-                	throw new SMArtClientException("queryString map key of unexpected type: "
+                	throw new SmartClientException("queryString map key of unexpected type: "
                 		+ keyObj.getClass().getName() + " -- " + keyObj);
                 }
                 String key = (String) keyObj;
@@ -293,16 +293,16 @@ public class Utils {
                            qsBuff.append(URLEncoder.encode(key,"UTF-8") + '=' + URLEncoder.encode(valueArr[ii],"UTF-8"));
                         }
                     } else {
-                   	    throw new SMArtClientException("queryString map value of unexpected type: "
+                   	    throw new SmartClientException("queryString map value of unexpected type: "
                    		    + valueObj.getClass().getName() + " -- " + valueObj);
                     }
                 } catch (java.io.UnsupportedEncodingException uee) {
-                    throw new SMArtClientException(uee);
+                    throw new SmartClientException(uee);
                 }
             }
             queryString0 = qsBuff.toString();
         } else {
-            throw new SMArtClientException(
+            throw new SmartClientException(
                 "queryString not String or Map, type is: " + queryString.getClass().getName());
         }
 
@@ -314,7 +314,7 @@ public class Utils {
 
         if (requestBody != null
              && (! (requestBody instanceof String || requestBody instanceof Byte[])) ) {
-            throw new SMArtClientException("requestBody must be either String or byte[], was: " +
+            throw new SmartClientException("requestBody must be either String or byte[], was: " +
                     requestBody.getClass().getName());
         }
 
@@ -348,7 +348,7 @@ public class Utils {
                 hcRequest = new HttpDelete(phaURLString);
             }
         } catch (java.io.UnsupportedEncodingException uee) {
-            throw new SMArtClientException(uee);
+            throw new SmartClientException(uee);
         }
 
         logger.info("about to sign  -- consumerKey, consumerSecret, phaToken, phaTokenSecret: " +
@@ -361,7 +361,7 @@ public class Utils {
         return httpResponse;
     }
 
-    public HttpResponse smartExecute(HttpUriRequest hcRequest, Map<String,Object> options) throws SMArtClientException {
+    public HttpResponse smartExecute(HttpUriRequest hcRequest, Map<String,Object> options) throws SmartClientException {
 
         AbstractHttpClient httpClient = new DefaultHttpClient();
         HttpParams httpParams0 = httpClient.getParams();
@@ -376,7 +376,7 @@ public class Utils {
         }
 
         if (! ((socketTimeout instanceof Integer) && (connectionTimeout instanceof Integer)) ) {
-            throw new SMArtClientException("socketTimeout and connectionTimeout options must be ingeters. "
+            throw new SmartClientException("socketTimeout and connectionTimeout options must be ingeters. "
                     + "sockenTimeout was " + socketTimeout.getClass().getName()
                     + ", and connectionTimeout was " + connectionTimeout.getClass().getName());
         }
@@ -423,7 +423,7 @@ public class Utils {
             httpResponse = httpClient.execute(hcRequest);
         } catch (IOException ioe) {
             logger.warn("connectionTimeout, socketTimeout: " + connectionTimeout + ", " + socketTimeout);
-            throw new SMArtClientException("connectionTimeout, socketTimeout: " + connectionTimeout + ", " + socketTimeout, ioe);
+            throw new SmartClientException("connectionTimeout, socketTimeout: " + connectionTimeout + ", " + socketTimeout, ioe);
         }
 
         return httpResponse;

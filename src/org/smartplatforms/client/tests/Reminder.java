@@ -1,5 +1,5 @@
 /**
- * Example SMArt REST Application: Parses OAuth tokens from
+ * Example SMART REST Application: Parses OAuth tokens from
  * browser-supplied header, then provides a list of which prescriptions
  * will need to be refilled soon (based on dispense days supply + date)
  *
@@ -34,9 +34,9 @@ import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.BindingSet;
 
-import org.smartplatforms.client.SMArtClient;
-import org.smartplatforms.client.SMArtClientException;
-import org.smartplatforms.client.SMArtOAuthParser;
+import org.smartplatforms.client.SmartClient;
+import org.smartplatforms.client.SmartClientException;
+import org.smartplatforms.client.SmartOAuthParser;
 import org.smartplatforms.client.SmartResponse;
 import org.smartplatforms.client.TokenSecret;
 public class Reminder extends HttpServlet {
@@ -95,7 +95,7 @@ public class Reminder extends HttpServlet {
 			throw new ServletException(ioe);
 		}
 
-		SMArtOAuthParser authParams = new SMArtOAuthParser(req);
+		SmartOAuthParser authParams = new SmartOAuthParser(req);
 		String recordId = authParams.getParam("smart_record_id");
 		TokenSecret tokenSecret = new TokenSecret(authParams);
 
@@ -103,7 +103,7 @@ public class Reminder extends HttpServlet {
 
 		// Represent the list as an RDF graph
 		try {
-			SMArtClient client = new SMArtClient(
+			SmartClient client = new SmartClient(
 							     sConfig.getInitParameter("consumerKey"),
 							     sConfig.getInitParameter("consumerSecret"),
 							     sConfig.getInitParameter("serverBaseURL"));
@@ -175,7 +175,7 @@ public class Reminder extends HttpServlet {
 				throw new ServletException(ioe);
 			}
 
-		} catch (SMArtClientException sme) {
+		} catch (SmartClientException sme) {
 			System.out.println("sme:::: " + sme.getClass().getName());
 			throw new ServletException(sme);
 		}

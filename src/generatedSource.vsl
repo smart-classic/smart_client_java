@@ -64,7 +64,7 @@ $method(
 ##
 #if(!$firstParam), #end
 #set($firstParam = $booleanFalse)Map<String,Object> options)
-            throws org.smartplatforms.client.SMArtClientException {
+            throws org.smartplatforms.client.SmartClientException {
 ##
 ## now, build the URL ============================================================
         String restURL = ##
