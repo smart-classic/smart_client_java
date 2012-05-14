@@ -1,15 +1,15 @@
-#SMArt Java Client Library
+#SMART Java Client Library
 Nate Finstein, Children's Hospital Informatics Program
 
 ## Obtaining the code, building a sample app
 
-To get started with the SMArt Java Client Library, you'll need
+To get started with the SMART Java Client Library, you'll need
 
     git
     java >= 1.6.0_20
     ant >= 1.7.0
 
-Obtain the code, build the client library from the SMArt ontology,
+Obtain the code, build the client library from the SMART ontology,
 and automatically build a sample servlet:
 
     git clone https://github.com/chb/smart_client_java.git
@@ -34,17 +34,17 @@ If all goes according to plan, you should be able to run the
 When you're ready to build your own app, you'll find the required
 dependencies in:
 
-    build/SMArtClient.jar
+    build/SmartClient.jar
     lib/*.jar
 
 The sample servlet is a good place to start:
     src/org/smartplatforms/client/tests/Reminder.java
 
 ---
-## Specifying a SMArt ontology file
+## Specifying a SMART ontology file
 
 By default, the client library is built against the current
-cloud-hosted SMArt ontology file at:
+cloud-hosted SMART ontology file at:
 
     http://sandbox-api.smartplatforms.org/ontology.
 
