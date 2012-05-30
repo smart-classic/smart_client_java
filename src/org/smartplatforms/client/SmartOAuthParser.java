@@ -17,11 +17,11 @@ import oauth.signpost.http.HttpParameters;
  *
  * @author josh
  */
-public class SMArtOAuthParser{
+public class SmartOAuthParser{
 	
 	private HttpParameters params;
 	
-    public SMArtOAuthParser(HttpServletRequest r) {
+    public SmartOAuthParser(HttpServletRequest r) {
         String cv = r.getParameter("oauth_header");
 
         try {
@@ -33,7 +33,7 @@ public class SMArtOAuthParser{
     	this.setParams(cv);   
     }
 
-    public SMArtOAuthParser(String oauth_header_string) {
+    public SmartOAuthParser(String oauth_header_string) {
     	this.setParams(oauth_header_string);
     }
     

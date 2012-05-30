@@ -14,7 +14,7 @@ public class TokenSecret {
         this.tokenSecret = tokenSecret;
     }
 
-    public TokenSecret(SMArtOAuthParser p) {
+    public TokenSecret(SmartOAuthParser p) {
         this.token = p.getParam("smart_oauth_token");
         this.tokenSecret = p.getParam("smart_oauth_token_secret");
     }

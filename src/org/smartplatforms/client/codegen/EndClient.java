@@ -6,7 +6,7 @@
 /**
  * This is both valid Java and valid Velocity template
  * Valid Java so it can be edited as Java, there are only a few velocity directives
- * Valid Velocity so it can be used to easily generate SMArt client
+ * Valid Velocity so it can be used to easily generate SMART client
  * This is meant to be input to Velocity.mergeTemplate(...).
  * There is no need to compile this file (it may be compiled incidentally)
  * The result of this file, after mergeTemplate, is part of a needed Java class.
@@ -34,7 +34,7 @@ import oauth.signpost.http.HttpParameters;  /* NOT PART OF GENERATED CLIENT */
 import oauth.signpost.http.HttpRequest;  /* NOT PART OF GENERATED CLIENT */
 import oauth.signpost.http.HttpResponse;  /* NOT PART OF GENERATED CLIENT */
 
-import org.smartplatforms.client.SMArtClientException;  /* NOT PART OF GENERATED CLIENT */
+import org.smartplatforms.client.SmartClientException;  /* NOT PART OF GENERATED CLIENT */
 import org.smartplatforms.client.Utils;  /* NOT PART OF GENERATED CLIENT */
 
 
@@ -53,9 +53,9 @@ public class EndClient {  /* NOT PART OF GENERATED CLIENT */
     /** get request token
      * @return [token, secret, redirectURL]
     */
-    public String[] getRequestToken(String recordId) throws SMArtClientException {
+    public String[] getRequestToken(String recordId) throws SmartClientException {
         if (requestTokenURL == null) {
-            throw new SMArtClientException("used constructor without requestTokenURL");
+            throw new SmartClientException("used constructor without requestTokenURL");
         }
         AbstractHttpClient httpClient = new DefaultHttpClient();
         CommonsHttpOAuthProvider oprov = new CommonsHttpOAuthProvider(
@@ -74,7 +74,7 @@ public class EndClient {  /* NOT PART OF GENERATED CLIENT */
             List<String[]> additionalParams = new ArrayList<String[]>();
             additionalParams.add(new String[] { "offline", "true" } );
             additionalParams.add(new String[] { "record_id", recordId /*\"2000000008\"*/ } );
-            oprov.setListener(new OAuthProviderListenerForSMArt(additionalParams));
+            oprov.setListener(new OAuthProviderListenerForSmart(additionalParams));
             urlWithRequestToken =  oprov.retrieveRequestToken(oauthConsumer, oauthCallback);// TODO FIXME oprov.retrieveRequestTokenAdditionalParameters( oauthConsumer, oauthCallback, \"offline\", \"true\", \"record_id\", recordId);
             System.out.println("consumer token/secret: " + oauthConsumer.getToken() + '/' + oauthConsumer.getTokenSecret());
             tokenSecret = new String[] {
@@ -84,19 +84,19 @@ public class EndClient {  /* NOT PART OF GENERATED CLIENT */
             if (oldDebug == null) { System.clearProperty("debug"); }
             else { System.setProperty("debug", oldDebug); }
         } catch (oauth.signpost.exception.OAuthMessageSignerException mse) {
-            throw new SMArtClientException(mse);
+            throw new SmartClientException(mse);
         } catch (oauth.signpost.exception.OAuthNotAuthorizedException nae) {
-            throw new SMArtClientException(nae);
+            throw new SmartClientException(nae);
         } catch (oauth.signpost.exception.OAuthExpectationFailedException efe) {
-            throw new SMArtClientException(efe);
+            throw new SmartClientException(efe);
         } catch (oauth.signpost.exception.OAuthCommunicationException comE) {
-            throw new SMArtClientException(comE);
+            throw new SmartClientException(comE);
         }
 System.out.println("requestToken: " + urlWithRequestToken);
         return tokenSecret; //urlWithRequestToken;
     }
 
-    public String[] getAccessToken(String requestToken, String requestTokenSecret, String verifier) throws SMArtClientException {
+    public String[] getAccessToken(String requestToken, String requestTokenSecret, String verifier) throws SmartClientException {
         AbstractHttpClient httpClient = new DefaultHttpClient();
         CommonsHttpOAuthProvider oprov = new CommonsHttpOAuthProvider(
                 requestTokenURL, accessTokenURL, authorizeURL, httpClient);
@@ -116,25 +116,26 @@ System.out.println("requestToken: " + urlWithRequestToken);
             if (oldDebug == null) { System.clearProperty("debug"); }
             else { System.setProperty("debug", oldDebug); }
         } catch (oauth.signpost.exception.OAuthMessageSignerException mse) {
-            throw new SMArtClientException(mse);
+            throw new SmartClientException(mse);
         } catch (oauth.signpost.exception.OAuthNotAuthorizedException nae) {
-            throw new SMArtClientException(nae);
+            throw new SmartClientException(nae);
         } catch (oauth.signpost.exception.OAuthExpectationFailedException efe) {
-            throw new SMArtClientException(efe);
+            throw new SmartClientException(efe);
         } catch (oauth.signpost.exception.OAuthCommunicationException comE) {
-            throw new SMArtClientException(comE);
+            throw new SmartClientException(comE);
         }
         String[] retVal = new String[2];
         retVal[0] = oauthConsumer.getToken();
         retVal[1] = oauthConsumer.getTokenSecret();
         if (retVal[0] == null || retVal[1] == null) {
-            throw new SMArtClientException("retrieveAccessToken returned null token and/or secret: " + retVal[0] + "   " + retVal[1]);
+            throw new SmartClientException("retrieveAccessToken returned null token and/or secret: " + retVal[0] + "   " + retVal[1]);
         }
         return retVal;
     }
     
+    /*
     public String[] getAccessToken_GET(String requestToken, String requestTokenSecret, String verifier)
-            throws SMArtClientException {
+            throws SmartClientException {
         AbstractHttpClient httpClient = new DefaultHttpClient();
         CommonsHttpOAuthConsumer oauthConsumer =
                 new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
@@ -163,18 +164,18 @@ System.out.println("requestToken: " + urlWithRequestToken);
             if (oldDebug == null) { System.clearProperty("debug"); }
             else { System.setProperty("debug", oldDebug); }
         } catch (oauth.signpost.exception.OAuthMessageSignerException mse) {
-            throw new SMArtClientException(mse);
+            throw new SmartClientException(mse);
         } catch (oauth.signpost.exception.OAuthExpectationFailedException efe) {
-            throw new SMArtClientException(efe);
+            throw new SmartClientException(efe);
         } catch (oauth.signpost.exception.OAuthCommunicationException comE) {
-            throw new SMArtClientException(comE);
+            throw new SmartClientException(comE);
         }
         String[] retVal = new String[2];
         String[] srrA = srr.split("&");
         for (int ii = 0; ii < srrA.length; ii++) {
             String[] srrAA = srrA[ii].split("=");
             if (srrAA.length != 2) {
-                throw new SMArtClientException("unexpected response from getAccessToken: " + srr);
+                throw new SmartClientException("unexpected response from getAccessToken: " + srr);
             }
             if (srrAA[0].equals("ouath_token")) {
                 retVal[0] = srrAA[1];
@@ -183,14 +184,15 @@ System.out.println("requestToken: " + urlWithRequestToken);
             }
         }
         if (retVal[0] == null || retVal[1] == null) {
-            throw new SMArtClientException("retrieveAccessToken did not return token and/or secret: " + srr);
+            throw new SmartClientException("retrieveAccessToken did not return token and/or secret: " + srr);
         }
         return retVal;
     }
+    */
     
-//    private String prepareQueryString(String... pairs) throws SMArtClientException {
+//    private String prepareQueryString(String... pairs) throws SmartClientException {
 //        if (pairs.length % 2 != 0) {
-//            throw new SMArtClientException("not an even number of query param values, should be two for each name=value pair");
+//            throw new SmartClientException("not an even number of query param values, should be two for each name=value pair");
 //        }
 //
 //        StringBuffer retVal = new StringBuffer();
@@ -206,10 +208,10 @@ System.out.println("requestToken: " + urlWithRequestToken);
 //        return retVal.toString();
 //    }
     
-class OAuthProviderListenerForSMArt implements OAuthProviderListener {
+class OAuthProviderListenerForSmart implements OAuthProviderListener {
     List<String[]> additionalParams = null;
 
-    OAuthProviderListenerForSMArt(List<String[]> additionalParams) {
+    OAuthProviderListenerForSmart(List<String[]> additionalParams) {
         this.additionalParams = additionalParams;
     }
 
@@ -220,12 +222,12 @@ class OAuthProviderListenerForSMArt implements OAuthProviderListener {
     }
 
     @Override
-    public void prepareRequest(HttpRequest request) throws SMArtClientException {
+    public void prepareRequest(HttpRequest request) throws SmartClientException {
         System.out.println("request: " + request.getClass().getName() + "  " + request.getContentType());
         Object uwr = request.unwrap();
         System.out.println("UUU: " + uwr.getClass().getName());
         if (! (uwr instanceof HttpPost)) {
-            throw new SMArtClientException(
+            throw new SmartClientException(
                     "OAuthProvider request was expected to be an instance of HttpPost: " + uwr.getClass().getName());
         }
         HttpPost httpPost = (HttpPost) uwr;
@@ -255,11 +257,11 @@ class OAuthProviderListenerForSMArt implements OAuthProviderListener {
     public void	prepareSubmission(HttpRequest request) {} //Called after the request has been signed, but before it's being sent.
 }
 
-    private String urlEncode(String toEncode) throws org.smartplatforms.client.SMArtClientException {
+    private String urlEncode(String toEncode) throws org.smartplatforms.client.SmartClientException {
         try {
             return java.net.URLEncoder.encode(toEncode,"UTF-8");
         } catch (java.io.UnsupportedEncodingException uee) {
-            throw new org.smartplatforms.client.SMArtClientException(uee);
+            throw new org.smartplatforms.client.SmartClientException(uee);
         }
     }
 //#end## end of if(!$challenge)

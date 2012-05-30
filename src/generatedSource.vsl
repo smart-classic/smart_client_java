@@ -29,17 +29,13 @@
 
 ## now put out method signature =============================================
 ## method name ---------------------------------
-#set($lastIsVar = $booleanFalse)
-    public Object ##
+    public SmartResponse ##
 #foreach($token in $tokenList)##
-#if($velocityCount > 1)_#end##
-#if($token.charAt(0) == "{")X#set($lastIsVar = $booleanTrue)##
-#{else}${token}#set($lastIsVar = $booleanFalse)##
+#if($token.charAt(0) == "{")X_##
+#{else}${token}_##
 #end##
 #{end}
 ##
-#if($path.charAt($pathLengthM1) == "/")_#end
-#if($lastIsVar)_#{end}##
 $method(
             ## now for the method parameters ------------
 #set($firstParam = $booleanTrue)
@@ -68,7 +64,7 @@ $method(
 ##
 #if(!$firstParam), #end
 #set($firstParam = $booleanFalse)Map<String,Object> options)
-            throws org.smartplatforms.client.SMArtClientException {
+            throws org.smartplatforms.client.SmartClientException {
 ##
 ## now, build the URL ============================================================
         String restURL = ##
