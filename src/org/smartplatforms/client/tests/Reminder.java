@@ -1,5 +1,5 @@
 /**
- * Example SMArt REST Application: Parses OAuth tokens from
+ * Example SMART REST Application: Parses OAuth tokens from
  * browser-supplied header, then provides a list of which prescriptions
  * will need to be refilled soon (based on dispense days supply + date)
  *
@@ -34,13 +34,14 @@ import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.BindingSet;
 
-import org.smartplatforms.client.SMArtClient;
-import org.smartplatforms.client.SMArtClientException;
-import org.smartplatforms.client.SMArtOAuthParser;
+import org.smartplatforms.client.SmartClient;
+import org.smartplatforms.client.SmartClientException;
+import org.smartplatforms.client.SmartOAuthParser;
+import org.smartplatforms.client.SmartResponse;
 import org.smartplatforms.client.TokenSecret;
 public class Reminder extends HttpServlet {
 	String reminderHeader = "<!DOCTYPE html>\n<html><head>"
-			+ "<script src=\"http://sandbox-dev.smartplatforms.org:8001/framework/smart/scripts/smart-api-client.js\">"
+			+ "<script src=\"http://sample-apps.smartplatforms.org/framework/smart/scripts/smart-api-client.js\">"
 			+ "</script><title>java generated</title></head>\n<body>\n";
 
 	String reminderFooter = "</body></html>";
@@ -94,7 +95,7 @@ public class Reminder extends HttpServlet {
 			throw new ServletException(ioe);
 		}
 
-		SMArtOAuthParser authParams = new SMArtOAuthParser(req);
+		SmartOAuthParser authParams = new SmartOAuthParser(req);
 		String recordId = authParams.getParam("smart_record_id");
 		TokenSecret tokenSecret = new TokenSecret(authParams);
 
@@ -102,13 +103,14 @@ public class Reminder extends HttpServlet {
 
 		// Represent the list as an RDF graph
 		try {
-			SMArtClient client = new SMArtClient(
-							     sConfig.getInitParameter("consumerKey"),
+			SmartClient client = new SmartClient(
+							     authParams.getParam("oauth_consumer_key"),
 							     sConfig.getInitParameter("consumerSecret"),
-							     sConfig.getInitParameter("serverBaseURL"));
+							     authParams.getParam("smart_container_api_base"));
 
-			RepositoryConnection meds = (RepositoryConnection) client
+                        SmartResponse resObj = client
 					.records_X_medications_GET(recordId, tokenSecret, null);
+                        RepositoryConnection meds = resObj.graph;
 
 			String pillWhen = null;
 			String pillQuant = null;
@@ -145,6 +147,7 @@ public class Reminder extends HttpServlet {
 
 			Iterator<String> medNames = pillDates.keySet().iterator();
 			StringBuffer retStrb = new StringBuffer();
+                        Boolean late = false;
 			GregorianCalendar today = new GregorianCalendar();
 			while (medNames.hasNext()) {
 				String aMed = medNames.next();
@@ -156,6 +159,7 @@ public class Reminder extends HttpServlet {
 						.toXMLFormat();
 				retStrb.append(aMed + ": <b>" + xmlFormatDate.substring(0, 10)
 						+ "</b><br>");
+                                late = true;
 			}
 			if (retStrb.length() == 0) {
 				retStrb.append("Up to date on all meds.");
@@ -163,7 +167,7 @@ public class Reminder extends HttpServlet {
 
 			try {
 				OutputStream resOut = res.getOutputStream();
-				resOut.write("Refills due!<br><br>".getBytes());
+				if (late) resOut.write("Refills due!<br><br>".getBytes());
 				resOut.write(retStrb.toString().getBytes());
 				resOut.write(reminderFooter.getBytes());
 				resOut.close();
@@ -171,7 +175,7 @@ public class Reminder extends HttpServlet {
 				throw new ServletException(ioe);
 			}
 
-		} catch (SMArtClientException sme) {
+		} catch (SmartClientException sme) {
 			System.out.println("sme:::: " + sme.getClass().getName());
 			throw new ServletException(sme);
 		}

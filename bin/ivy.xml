@@ -19,6 +19,9 @@
         <dependency org="org.slf4j" name="slf4j-jcl" rev="1.6.1" conf="codegen,run->default" />
         <dependency org="org.slf4j" name="slf4j-api" rev="1.6.1" conf="codegen,run->default" />
         <dependency org="commons-lang" name="commons-lang" rev="2.5"  conf="codegen,run->default" />
+        <dependency org="commons-beanutils" name="commons-beanutils" rev="1.8.3"  conf="codegen,run->default" />
+        <dependency org="commons-collections" name="commons-collections" rev="3.2.1"  conf="codegen,run->default" />
+        <dependency org="net.sf.ezmorph" name="ezmorph" rev="1.0.6"  conf="codegen,run->default" />
         <dependency org="commons-logging" name="commons-logging" rev="1.1.1"  conf="codegen,run->default" />
       <exclude module="ant"></exclude>
 
