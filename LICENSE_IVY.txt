@@ -1,4 +1,4 @@
-The license, below, covers ivy-2.2.0.jar, which is included in this SMArtClient distribution.
+The license, below, covers ivy-2.2.0.jar, which is included in this SmartClient distribution.
 
 
                                  Apache License

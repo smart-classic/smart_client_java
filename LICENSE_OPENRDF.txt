@@ -1,5 +1,5 @@
 The Copyright and license, below, covers openrdf-sesame-2.3.2-onejar.jar,
-which is included in this SMArtClient distribution.
+which is included in this SmartClient distribution.
 
 Copyright Aduna (http://www.aduna-software.com/) © 2001-2010
 All rights reserved.
