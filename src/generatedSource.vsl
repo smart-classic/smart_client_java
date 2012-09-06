@@ -29,14 +29,7 @@
 
 ## now put out method signature =============================================
 ## method name ---------------------------------
-    public SmartResponse ##
-#foreach($token in $tokenList)##
-#if($token.charAt(0) == "{")X_##
-#{else}${token}_##
-#end##
-#{end}
-##
-$method(
+    public SmartResponse $method_name(
             ## now for the method parameters ------------
 #set($firstParam = $booleanTrue)
 #foreach($token in $tokenList)
