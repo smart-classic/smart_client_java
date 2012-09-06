@@ -22,7 +22,7 @@ and automatically build a sample servlet:
     (    build.bat               )
 
 If all goes according to plan, you should be able to run the
-`RxReminder` sample servlet now:
+`RxReminder` sample app now:
 
   1. Copy `build/smartapp.war` to `<tomcat-directory>/webapps`
   2. Start up tomcat (on port 8000)
