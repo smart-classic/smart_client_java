@@ -196,10 +196,11 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
         String sparqlAllTheWay =
             "PREFIX api: <http://smartplatforms.org/terms/api#> \n" +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
-            "SELECT  ?description ?method ?path ?target ?by_internal_id ?category  \n" +
-            "    WHERE { { ?call <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> api:call }.\n" +
+            "SELECT  ?description ?method ?method_name ?path ?target ?by_internal_id ?category  \n" +
+            "    WHERE { { ?call <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> api:Call }.\n" +
             "            { ?call rdfs:comment ?description }.\n" +
-            "            { ?call api:method ?method }.\n" +
+            "            { ?call api:httpMethod ?method }.\n" +
+            "            { ?call api:clientMethodName ?method_name }.\n" +
             "            { ?call api:path ?path }.\n" +
             "           OPTIONAL { ?call api:target ?target }.\n" +
             "           OPTIONAL { ?call api:by_internal_id ?by_internal_id }.\n" +
@@ -226,7 +227,7 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
         String pathBase = "/";
 
         String[] preds =  new String[] {
-            "description",  "method", "path", "target", "by_internal_id", "category" };
+            "description",  "method", "method_name", "path", "target", "by_internal_id", "category" };
         for (String pred : preds) {
             Value objectVal = bindSet.getValue(pred);
             String objectStr = null;
