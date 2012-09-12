@@ -109,7 +109,7 @@ public class Reminder extends HttpServlet {
 							     authParams.getParam("smart_container_api_base"));
 
                         SmartResponse resObj = client
-					.records_X_medications_GET(recordId, tokenSecret, null);
+					.get_medications(recordId, tokenSecret, null);
                         RepositoryConnection meds = resObj.graph;
 
 			String pillWhen = null;
