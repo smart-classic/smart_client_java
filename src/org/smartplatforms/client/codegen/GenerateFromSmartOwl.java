@@ -75,9 +75,11 @@ public class GenerateFromSmartOwl {
         javaDocTable.put("labResultPanelId", "server's internal ID for this lab result panel");
         javaDocTable.put("smartAppId", "server's internal ID for this app");
         javaDocTable.put("immunizationId", "server's internal ID for this immunization record");
-        javaDocTable.put("vitalSignsId", "server's internal ID for this vital signs record");
+        javaDocTable.put("vitalSignSetId", "server's internal ID for this vital signs record");
         javaDocTable.put("descriptor", "server's internal ID for this app");
         javaDocTable.put("encounterId", "server's internal ID for this encounter");
+        javaDocTable.put("clinicalNoteId", "server's internal ID for this clinical note");
+        javaDocTable.put("procedureId", "server's internal ID for this procedure");
     }
 
     public static void main( String[] args )
@@ -196,12 +198,13 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
         String sparqlAllTheWay =
             "PREFIX api: <http://smartplatforms.org/terms/api#> \n" +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
-            "SELECT  ?description ?method ?method_name ?path ?target ?by_internal_id ?category  \n" +
+            "SELECT  ?call ?description ?method ?method_name ?path ?target ?by_internal_id ?category ?cardinality  \n" +
             "    WHERE { { ?call <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> api:Call }.\n" +
             "            { ?call rdfs:comment ?description }.\n" +
             "            { ?call api:httpMethod ?method }.\n" +
             "            { ?call api:clientMethodName ?method_name }.\n" +
             "            { ?call api:path ?path }.\n" +
+            "            { ?call api:cardinality ?cardinality }.\n" +
             "           OPTIONAL { ?call api:target ?target }.\n" +
             "           OPTIONAL { ?call api:by_internal_id ?by_internal_id }.\n" +
             "           OPTIONAL { ?call api:category ?category }.\n" +
@@ -214,11 +217,50 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
         while (tqr.hasNext()) {
             BindingSet bindSet = tqr.next();  // get next api:call
             //System.out.println("description: " + bindSet.getValue("description").stringValue());
-            processACall(bindSet, writer);
+            
+            //api:clientParameterName
+            //api:hasFilter
+            
+                    
+            String callURI = "<" + bindSet.getValue("call").stringValue() + ">";
+            String sparql =
+                "PREFIX api: <http://smartplatforms.org/terms/api#> \n" +
+                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" +
+                "SELECT ?param \n" +
+                "    WHERE { { " + callURI + " <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> api:Call }.\n" +
+                "            { " + callURI + " api:hasFilter ?f }.\n" +
+                "            { ?f api:clientParameterName ?param }.\n" +
+                "        }";
+            
+            TupleQuery tq2 = con.prepareTupleQuery(QueryLanguage.SPARQL, sparql);
+            TupleQueryResult tqr2 = tq2.evaluate();
+            String strFilters = "";
+            
+           if (bindSet.getValue("cardinality").stringValue().equals("multiple")) {
+               strFilters = "limit,offset";
+           }
+            
+            while (tqr2.hasNext()) {
+                BindingSet bindSet2 = tqr2.next();
+                if (strFilters.length() > 0) strFilters += ",";
+                strFilters += bindSet2.getValue("param").stringValue();
+            }
+            
+            String[] filtersArr = strFilters.split(",");
+            String filters = "";
+            
+            if (strFilters.length() > 0) {
+                for (int i = 0; i < filtersArr.length; i++) {
+                    if (i > 0) filters += ",";
+                    filters += "\"" + filtersArr[i] + "\"";
+                }
+            } else filters = null;
+            
+            processACall(bindSet, filters, writer);
         }
     }
 
-    private void processACall(BindingSet bindSet, Writer writer) throws IOException {
+    private void processACall(BindingSet bindSet, String filters, Writer writer) throws IOException {
         VelocityContext callPO = new VelocityContext();
         callPO.put("booleanTrue", true);
         callPO.put("booleanFalse", false);
@@ -227,7 +269,7 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
         String pathBase = "/";
 
         String[] preds =  new String[] {
-            "description",  "method", "method_name", "path", "target", "by_internal_id", "category" };
+            "description",  "method", "method_name", "path", "target", "by_internal_id", "category", "cardinality" };
         for (String pred : preds) {
             Value objectVal = bindSet.getValue(pred);
             String objectStr = null;
@@ -288,6 +330,15 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
 
         callPO.put("javadocTable", javaDocTable);
         callPO.put("generateFromSmartOwl", this);
+        callPO.put("filters", filters);
+        
+        /*
+        if (filters != null) {
+            System.out.println("filters: ");
+            for (int i = 0; i < filters.length; i++)
+                System.out.println("   " + filters[i]);
+        }
+        */
 
         //preVelocity(callPO, fos);
         useVelocity(callPO, writer);
