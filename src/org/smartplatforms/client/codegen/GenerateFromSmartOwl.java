@@ -331,14 +331,6 @@ package org.smartplatforms.client.codegen;  /* NOT PART OF GENERATED CLIENT +/
         callPO.put("javadocTable", javaDocTable);
         callPO.put("generateFromSmartOwl", this);
         callPO.put("filters", filters);
-        
-        /*
-        if (filters != null) {
-            System.out.println("filters: ");
-            for (int i = 0; i < filters.length; i++)
-                System.out.println("   " + filters[i]);
-        }
-        */
 
         //preVelocity(callPO, fos);
         useVelocity(callPO, writer);
