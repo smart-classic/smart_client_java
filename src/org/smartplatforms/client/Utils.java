@@ -148,7 +148,7 @@ public class Utils {
     * Therfore it is public.
     *
     * @param reqMeth POST, GET, or .....
-    * @param reletivePath as documented at <code>http://wiki.chip.org/indivo</code>
+    * @param relativePath as documented at <code>http://wiki.chip.org/indivo</code>
     * @param queryString part of URL following '?', but not including '?'
     *     See <b>queryString param</b> note in the class description, above.
     * @param accessTokenAndSecret authorized request token and secret
@@ -157,24 +157,40 @@ public class Utils {
     */
     public SmartResponse smartRequest(
             String reqMeth,
-            String reletivePath,
+            String relativePath,
             Object queryString,
             TokenSecret accessTokenAndSecret,
             Object requestBody,   // String or byte[]
-            Map<String,Object> options) throws SmartClientException {
+            Map<String,Object> options,
+            String [] filters) throws SmartClientException {
         
         if (options == null) { options = new HashMap<String,Object>(); }
-
+        
         String aToken = null;
         String aSecret = null;
         if (accessTokenAndSecret != null) {
             aToken = accessTokenAndSecret.getToken();
             aSecret = accessTokenAndSecret.getTokenSecret();
         }
+        
+        boolean firstFilter = true;
+        
+        for (String filter : filters) {
+            if (options.containsKey(filter)) {
+                if (!firstFilter) {
+                    relativePath += "&";
+                } else {
+                    relativePath += "?";
+                    firstFilter = false;
+                }
+                relativePath += filter + "=" + options.get(filter);
+            }
+        }
+        
         HttpResponse response = phaRequestPart1(
-            reqMeth, reletivePath, queryString, aToken, aSecret, requestBody, options);
+            reqMeth, relativePath, queryString, aToken, aSecret, requestBody, options);
 
-        return smartRequestResponse(response, reqMeth + " " + reletivePath, options);
+        return smartRequestResponse(response, reqMeth + " " + relativePath, options);
     }
 
     public SmartResponse smartRequestResponse(HttpResponse response, String requestdisplay, Map<String,Object> options)
@@ -232,7 +248,7 @@ public class Utils {
 /**
  * 
  * @param reqMeth  "GET", "POST" or etc.
- * @param reletivePath  starting with '/'
+ * @param relativePath  starting with '/'
  * @param queryString   for example: "a=b&c=d"
  * @param phaToken
  * @param phaTokenSecret
@@ -243,7 +259,7 @@ public class Utils {
  */
     private HttpResponse phaRequestPart1(
             String reqMeth,
-            String reletivePath,
+            String relativePath,
             Object queryString,
             String phaToken,
             String phaTokenSecret,
@@ -255,8 +271,8 @@ public class Utils {
             displayQS = queryString.getClass().getName() + " " + queryString;
         };
 
-        logger.info("reletivePath, queryString, requestXmlOrParams: "
-                + reletivePath + ",  " + displayQS + '\n' + requestBody + "\n\n");
+        logger.info("relativePath, queryString, requestXmlOrParams: "
+                + relativePath + ",  " + displayQS + '\n' + requestBody + "\n\n");
         String queryString0;
         if (queryString == null
                 || ((queryString instanceof String) && ((String) queryString).length() == 0)
@@ -306,7 +322,7 @@ public class Utils {
                 "queryString not String or Map, type is: " + queryString.getClass().getName());
         }
 
-        String phaURLString = baseURL + reletivePath;
+        String phaURLString = baseURL + relativePath;
         if (queryString0.length() > 0) { phaURLString += "?" + queryString0; }
 
 ///* FIXME temp for test*/ System.out.println(phaURLString); if (requestBody != null) { System.out.println(requestBody); }

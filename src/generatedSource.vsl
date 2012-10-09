@@ -87,11 +87,16 @@
 #if($state == "CONSTANT")"#end##
 #if($state == "VARIABLE")#end##
 ;
+#if($filters)
+        String[] filters = {$filters};
+#else##
+        String[] filters = null;
+#end##
         return smartUtils.smartRequest("$method", restURL, null, ##
 #if($category != "container_items" && $category != "container_item")accessTokenAndSecret, ##
 #{else}null, #end##
 #if($method == "PUT" || $method == "POST")requestBody, ##
 #{else}null, #end##
-options);
+options, filters);
     }
 #end  ## if for challenge, no PUT, POST or DELETE
