@@ -103,13 +103,21 @@ public class Reminder extends HttpServlet {
 
 		// Represent the list as an RDF graph
 		try {
+            // Example of using filters and pagination parameters:
+            //
+            // Map<String,Object> params = new HashMap <String,Object> ();
+            // params.put ("limit","5");
+            // params.put ("offset", "0");
+            
+            Map<String,Object> params = null;
+        
 			SmartClient client = new SmartClient(
 							     authParams.getParam("oauth_consumer_key"),
 							     sConfig.getInitParameter("consumerSecret"),
 							     authParams.getParam("smart_container_api_base"));
 
                         SmartResponse resObj = client
-					.get_medications(recordId, tokenSecret, null);
+					.get_medications(recordId, tokenSecret, params);
                         RepositoryConnection meds = resObj.graph;
 
 			String pillWhen = null;
