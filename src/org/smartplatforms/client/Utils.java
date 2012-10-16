@@ -172,18 +172,20 @@ public class Utils {
             aToken = accessTokenAndSecret.getToken();
             aSecret = accessTokenAndSecret.getTokenSecret();
         }
-        
-        boolean firstFilter = true;
-        
-        for (String filter : filters) {
-            if (options.containsKey(filter)) {
-                if (!firstFilter) {
-                    relativePath += "&";
-                } else {
-                    relativePath += "?";
-                    firstFilter = false;
+
+        if (filters != null) {
+            boolean firstFilter = true;
+            
+            for (String filter : filters) {
+                if (options.containsKey(filter)) {
+                    if (!firstFilter) {
+                        relativePath += "&";
+                    } else {
+                        relativePath += "?";
+                        firstFilter = false;
+                    }
+                    relativePath += filter + "=" + options.get(filter);
                 }
-                relativePath += filter + "=" + options.get(filter);
             }
         }
         
