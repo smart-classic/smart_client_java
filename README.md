@@ -12,7 +12,7 @@ To get started with the SMART Java Client Library, you'll need
 Obtain the code, build the client library from the SMART ontology,
 and automatically build a sample servlet:
 
-    git clone https://github.com/chb/smart_client_java.git
+    git clone https://github.com/smart-platforms/smart_client_java.git
     cd smart_client_java/bin
 
     sh ./build.sh
